@@ -195,7 +195,7 @@ import  { Context, CreateContextOptions } from 'node:vm';
 
 ```javascript
 const { CTX, execute } = require('astroctx');
-const custom = CTX.createContext({ console });
+const custom = CTX.create({ console });
 execute(`console.log(123);`, { ctx: custom }); // Output: 123
 execute(`console.log(123);`); // No output, because different stdout stream
 ```
