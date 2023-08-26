@@ -1,24 +1,26 @@
 {
   "license": "MIT",
-  "version": "1.1.1",
+  "version": "1.0.0",
   "type": "commonjs",
-  "name": "astrohelm-workspace",
+  "name": "astroctx",
   "homepage": "https://astrohelm.ru",
-  "description": "Astrohelm workspace example",
+  "description": "Javascript VM context wrapper",
   "author": "Alexander Ivanov <sashapop101@gmail.com>",
   "keywords": [
+    "v8",
+    "vm",
+    "script",
+    "runner",
     "nodejs",
-    "zero-dependencies",
-    "prettier",
-    "eslint",
-    "ts",
-    "workspace",
-    "example",
-    "preset",
-    "starter-kit",
+    "wrapper",
+    "sandbox",
+    "context",
     "astrohelm",
+    "container",
+    "isolation",
     "javascript",
-    "typescript"
+    "script-loader",
+    "zero-dependencies"
   ],
 
   "main": "index.js",
@@ -27,18 +29,18 @@
   "readmeFilename": "README.md",
   "engines": { "node": "18 || 19 || 20" },
   "browser": {},
-  "files": ["/dist", "/lib", "/types"],
+  "files": ["/lib", "/types"],
 
   "scripts": {
-    "test": "node --test && tsc",
+    "test": "node --test",
     "dev": "node index.js",
     "prettier:fix": "prettier --write \"**/*.{js,ts,json,html,cjs,md,yaml}\"",
     "eslint:fix": "eslint --fix \"**/*.{js,ts}\""
   },
 
-  "repository": { "type": "git", "url": "git+https://github.com/astrohelm/workspace.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/astrohelm/astroctx.git" },
   "bugs": {
-    "url": "https://github.com/astrohelm/workspace/issues",
+    "url": "https://github.com/astrohelm/astroctx/issues",
     "email": "sashapop101@gmail.com"
   },
 
