@@ -1,8 +1,6 @@
 <h1 align="center">Astroctx - VM Container for Javascript</h1>
 
-**Why should i use it ?** How often do you see libraries which mutates global variables Or how often
-do you check libraries actins ? Astroctx provides script isolation in custom contexts to solve this
-issues. And yes, this library written to prevent unexpected behavior.
+**Why should i use it ?** How often do you see libraries which mutates global variables Or how often do you check libraries actions ? Astroctx provides script isolation in custom contexts to solve this issues. And yes, this library written to prevent unexpected behavior.
 
 > Also, Astropack may be useful as routing loader, if some loaded route makes an error while
 > runtime, you may recreate it - to prevent memory leaks.
