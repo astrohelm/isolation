@@ -4,7 +4,7 @@
   "type": "commonjs",
   "name": "astroctx",
   "homepage": "https://astrohelm.ru",
-  "description": "Javascript VM context wrapper",
+  "description": "How often do you see libraries which mutates global variables Or how often do you check libraries actions ? Astroctx provides script isolation in custom contexts to solve this issues. And yes, this library written to prevent unexpected behavior.",
   "author": "Alexander Ivanov <sashapop101@gmail.com>",
   "keywords": [
     "v8",
