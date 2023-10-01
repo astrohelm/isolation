@@ -1,4 +1,4 @@
-({
+module.exports = {
   field: 'value',
 
   add(a, b) {
@@ -6,4 +6,4 @@
   },
 
   sub: (a, b) => a - b,
-});
+};

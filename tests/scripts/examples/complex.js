@@ -1,4 +1,4 @@
-({
+module.exports = {
   field: 'value',
 
   add: (a, b, callback) => {
@@ -6,4 +6,4 @@
       callback(new Error('Custom error'), a + b);
     }, 10);
   },
-});
+};

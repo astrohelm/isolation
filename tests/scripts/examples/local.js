@@ -1,6 +1,6 @@
 const local = 'hello';
 
-async (...args) => {
+module.exports = async (...args) => {
   const result = { local, args };
   return result;
 };

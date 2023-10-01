@@ -4,12 +4,12 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { read } = Script;
+const { require: read } = Script;
 const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('[CJS] Eval error ', async () => {
+test('[Core] Eval error ', async () => {
   try {
     exec(`module.exports = eval('100 * 2');`, { type: 'cjs' });
     assert.fail(new Error('Should throw an error.'));
@@ -18,7 +18,7 @@ test('[CJS] Eval error ', async () => {
   }
 });
 
-test('[JS] Eval error', async () => {
+test('[Core] Eval error', async () => {
   try {
     exec(`eval('100 * 2')`);
     assert.fail(new Error('Should throw an error.'));
@@ -27,7 +27,7 @@ test('[JS] Eval error', async () => {
   }
 });
 
-test('[JS] Error.notfound.js', async () => {
+test('[Core] Error.notfound.js', async () => {
   let ms;
   try {
     ms = await read(target('error.notfound.js'));
@@ -38,7 +38,7 @@ test('[JS] Error.notfound.js', async () => {
   assert.strictEqual(ms, undefined);
 });
 
-test('[JS] Error.syntax.js', async () => {
+test('[Core] Error.syntax.js', async () => {
   try {
     await read(target('error.syntax'));
     assert.fail(new Error('Should throw an error.'));
@@ -47,7 +47,7 @@ test('[JS] Error.syntax.js', async () => {
   }
 });
 
-test('[JS] Error.reference.js', async () => {
+test('[Core] Error.reference.js', async () => {
   try {
     const script = await read(target('error.reference.js'));
     await script();
@@ -58,7 +58,7 @@ test('[JS] Error.reference.js', async () => {
   }
 });
 
-test('[JS] Call undefined as a function', async () => {
+test('[Core] Call undefined as a function', async () => {
   try {
     const script = await read(target('error.undef.js'));
     await script();
@@ -68,7 +68,7 @@ test('[JS] Call undefined as a function', async () => {
   }
 });
 
-test('[JS/CJS] Error.reference.js Error.reference.cjs (line number)', async () => {
+test('[Core] Error.reference.js Error.reference.cjs (line number)', async () => {
   try {
     const script = await read(target('error.reference.js'));
     await script();
@@ -85,14 +85,13 @@ test('[JS/CJS] Error.reference.js Error.reference.cjs (line number)', async () =
     await script();
     assert.fail(new Error('Should throw an error.'));
   } catch (err) {
-    console.log(err.stack.split('\n'));
     const [, firstLine] = err.stack.split('\n');
     const [, lineNumber] = firstLine.split(':');
     assert.strictEqual(parseInt(lineNumber, 10), 4);
   }
 });
 
-test('Error.empty.js', async () => {
+test('[Core] Error.empty.js', async () => {
   try {
     await read(target('error.empty.js'));
     assert.fail(new Error('Should throw an error.'));
