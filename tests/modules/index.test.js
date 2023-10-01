@@ -4,39 +4,31 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { CTX, read } = Script;
+const { sandbox, require: read } = Script;
 const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('Access for node internal module', async () => {
-  const sandbox = {};
-  sandbox.global = sandbox;
+test('[Sanbox access] For node internal module', async () => {
+  const context = {};
+  context.global = context;
   const src = `module.exports = { fs: require('fs') };`;
-  const context = CTX.create(Object.freeze(sandbox));
-  exec(src, { context, access: { fs: true }, type: 'cjs' });
+  const ctx = sandbox(Object.freeze(context));
+  exec(src, { ctx, access: module => module === 'fs', type: 'cjs' });
 });
 
-test('[JS/CJS] Access non-existent npm module', async () => {
+test('[Sanbox access] non-existent but granted', async () => {
   try {
-    const ms = exec(`const notExist = require('leadfisher');`, {
-      access: { leadfisher: true },
-      type: 'cjs',
+    const ms = exec(`module.exports = require('astroctx');`, {
+      access: module => module === 'astroctx',
     });
     assert.strictEqual(ms, undefined);
   } catch (err) {
-    assert.strictEqual(err.message, `Cannot find module 'leadfisher'`);
-  }
-
-  try {
-    const ms = exec(`const notExist = require('leadfisher');`, { access: { leadfisher: true } });
-    assert.strictEqual(ms, undefined);
-  } catch (err) {
-    assert.strictEqual(err.message, `Cannot find module 'leadfisher'`);
+    assert.strictEqual(err.message, `Cannot find module 'astroctx'`);
   }
 });
 
-test('[CJS] Access for stub function', async () => {
+test('[Sanbox access] Stub', async () => {
   const src = `
     const fs = require('fs');
     module.exports = {
@@ -49,63 +41,56 @@ test('[CJS] Access for stub function', async () => {
   `;
   const ms = exec(src, {
     access: {
-      fs: {
-        readFile(filename, callback) {
-          callback(null, 'stub-content');
-        },
+      sandbox: module => {
+        if (module === 'fs') {
+          return {
+            readFile(filename, callback) {
+              callback(null, 'stub-content');
+            },
+          };
+        }
+        return null;
       },
     },
-    type: 'cjs',
   });
   const res = await ms.useStub();
   assert.strictEqual(res, 'stub-content');
 });
 
-test('[CJS] Access nestsed commonjs', async () => {
-  const sandbox = { console };
-  sandbox.global = sandbox;
+test('[Sanbox access] Nested', async () => {
+  const context = { console };
+  context.global = sandbox;
   const src = `module.exports = require('./module.cjs');`;
   const ms = exec(src, {
-    ctx: CTX.create(Object.freeze(sandbox)),
+    ctx: sandbox(Object.freeze(context)),
     dir: path.join(__dirname, 'examples'),
-    access: {
-      [path.join(__dirname, 'examples', 'module.cjs')]: true,
-      [path.join(__dirname, 'examples', 'module.nested.js')]: true,
+    access: filepath => {
+      const available = {
+        [path.join(__dirname, 'examples', 'module.cjs')]: true,
+        [path.join(__dirname, 'examples', 'module.nested.js')]: true,
+      };
+      return available[filepath];
     },
-    type: 'cjs',
   });
   assert.strictEqual(ms.value, 1);
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[CJS] Access folder [path prefix]', async () => {
-  const src = `module.exports = require('./module.cjs');`;
-  const ms = exec(src, {
-    dir: path.join(__dirname, 'examples'),
-    access: { [path.join(__dirname)]: true },
-    type: 'cjs',
-  });
-  assert.strictEqual(ms.value, 1);
-  assert.strictEqual(ms.nested.value, 2);
-});
-
-test('[CJS] Access with readScript', async () => {
+test('[Sanbox access] Access with reader', async () => {
   const ms = await read.script(target('module.cjs'), {
     dir: path.join(__dirname, 'examples'),
-    access: { [path.join(__dirname, 'examples', 'module.nested.js')]: true },
-    type: 'cjs',
+    access: filepath => filepath === path.join(__dirname, 'examples', 'module.nested.js'),
   });
   assert.strictEqual(ms.value, 1);
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[CJS] Access nested not permitted', async () => {
+test('[Sanbox access] Nested not permitted', async () => {
   try {
     const src = `module.exports = require('./module.cjs');`;
     exec(src, {
       dir: path.join(__dirname, 'examples'),
-      access: { [path.join(__dirname, 'examples', './module.cjs')]: true },
-      type: 'cjs',
+      access: filepath => filepath === path.join(__dirname, 'examples', './module.cjs'),
     });
     assert.fail(new Error('Should not be loaded.'));
   } catch (err) {
@@ -113,8 +98,10 @@ test('[CJS] Access nested not permitted', async () => {
   }
 });
 
-test('[CJS] Access nestsed npm modules', async () => {
+test('[Sandbox access] nested npm', async () => {
   const src = `module.exports = require('node:test');`;
-  const ms = exec(src, { access: { 'node:test': true }, type: 'cjs' });
+  const ms = exec(src, {
+    access: module => module === 'node:test',
+  });
   assert.strictEqual(typeof ms, 'function');
 });

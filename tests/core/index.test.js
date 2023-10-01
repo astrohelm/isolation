@@ -1,41 +1,74 @@
 'use strict';
-
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { CTX, read } = Script;
+const { sandbox, require: read } = Script;
 const target = name => path.join(__dirname, name);
 
-test('Script executor', async () => {
-  const script = new Script(`({field: 'value'});`);
-  assert.strictEqual(script.type, 'js');
+test('[Core] Script executor', async () => {
+  const script = new Script(`module.exports = ({field: 'value'});`);
   assert.strictEqual(script.name, 'Astro');
   assert.strictEqual(script.dir, process.cwd());
   assert.strictEqual(typeof script.execute, 'function');
-  const ms = script.execute();
-  assert.deepStrictEqual(Object.keys(ms), ['field']);
-  assert.strictEqual(ms.field, 'value');
+  const result = script.execute();
+  assert.deepStrictEqual(Object.keys(result), ['field']);
+  assert.strictEqual(result.field, 'value');
 });
 
-test('[JS/CJS] Script loader', async () => {
+test('[Core] Script executor extended', async () => {
+  const script = Script.prepare(`module.exports = a + b`);
+  assert.strictEqual(script.name, 'Astro');
+  assert.strictEqual(script.dir, process.cwd());
+  assert.strictEqual(typeof script.execute, 'function');
+  assert.strictEqual(script.execute({ a: 2, b: 2 }), 4);
+  assert.strictEqual(script.execute({ a: 2, b: 3 }), 5);
+});
+
+test('[Core] Npm isolation check', async () => {
+  const access = () => true;
+  const script = Script.prepare(`module.exports = require('chalk')`, {
+    access,
+    npmIsolation: true,
+    ctx: sandbox.NODE,
+  });
+  assert.strictEqual(typeof script.execute(), 'function');
+});
+
+test('[Reader] Script loader', async () => {
   const simple = await read.script(target('examples/simple.js'));
 
-  assert.deepStrictEqual(Object.keys(simple), ['field', 'add', 'sub']);
+  assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
   assert.strictEqual(simple.field, 'value');
   assert.strictEqual(simple.add(2, 3), 5);
   assert.strictEqual(simple.sub(2, 3), -1);
 });
 
-test('[JS/CJS] Universal loader', async () => {
-  const scripts = await read(target('examples'));
+test('[Reader] Access control', async () => {
+  const access = { internal: path => !path.endsWith('simple.js') && !path.endsWith('.json') };
+  const scripts = await read(target('examples'), { access });
+  const { deep } = scripts;
+  const { arrow } = deep;
+
+  assert.strictEqual(typeof scripts, 'object');
+  assert.strictEqual(Object.keys(scripts).length, 1);
+
+  assert.strictEqual(typeof arrow, 'function');
+  assert.strictEqual(arrow.toString(), '(a, b) => a + b');
+  assert.strictEqual(arrow(2, 3), 5);
+  assert.strictEqual(arrow(-1, 1), 0);
+});
+
+test('[Reader] Folder loader', async () => {
+  const access = { internal: path => !path.endsWith('.json') };
+  const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
   const { arrow } = deep;
 
   assert.strictEqual(typeof scripts, 'object');
   assert.strictEqual(Object.keys(scripts).length, 2);
 
-  assert.deepStrictEqual(Object.keys(simple), ['field', 'add', 'sub']);
+  assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
   assert.strictEqual(simple.field, 'value');
   assert.strictEqual(simple.add(2, 3), 5);
   assert.strictEqual(simple.sub(2, 3), -1);
@@ -46,15 +79,16 @@ test('[JS/CJS] Universal loader', async () => {
   assert.strictEqual(arrow(-1, 1), 0);
 });
 
-test('[JS/CJS] Folder loader', async () => {
-  const scripts = await read.dir(target('examples'));
+test('[Reader] Universal loader', async () => {
+  const access = path => !path.endsWith('.json');
+  const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
   const { arrow } = deep;
 
   assert.strictEqual(typeof scripts, 'object');
   assert.strictEqual(Object.keys(scripts).length, 2);
 
-  assert.deepStrictEqual(Object.keys(simple), ['field', 'add', 'sub']);
+  assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
   assert.strictEqual(simple.field, 'value');
   assert.strictEqual(simple.add(2, 3), 5);
   assert.strictEqual(simple.sub(2, 3), -1);
@@ -65,9 +99,23 @@ test('[JS/CJS] Folder loader', async () => {
   assert.strictEqual(arrow(-1, 1), 0);
 });
 
-test('[JS/CJS] Folder loader with preparations', async () => {
-  const scripts = await read.dir(target('examples'), { prepare: true });
-  console.log(scripts);
+test('[Reader] Deep option', async () => {
+  const access = path => !path.endsWith('.json');
+  const scripts = await read(target('examples'), { access }, false);
+  const { simple } = scripts;
+
+  assert.strictEqual(typeof scripts, 'object');
+  assert.strictEqual(Object.keys(scripts).length, 1);
+
+  assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
+  assert.strictEqual(simple.field, 'value');
+  assert.strictEqual(simple.add(2, 3), 5);
+  assert.strictEqual(simple.sub(2, 3), -1);
+});
+
+test('[Reader] prepare option', async () => {
+  const access = path => !path.endsWith('.json');
+  const scripts = await read.dir(target('examples'), { prepare: true, access });
   const { deep } = scripts;
   let { simple } = scripts;
   let { arrow } = deep;
@@ -78,7 +126,7 @@ test('[JS/CJS] Folder loader with preparations', async () => {
   assert.strictEqual(typeof scripts, 'object');
   assert.strictEqual(Object.keys(scripts).length, 2);
 
-  assert.deepStrictEqual(Object.keys(simple), ['field', 'add', 'sub']);
+  assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
   assert.strictEqual(simple.field, 'value');
   assert.strictEqual(simple.add(2, 3), 5);
   assert.strictEqual(simple.sub(2, 3), -1);
@@ -87,59 +135,60 @@ test('[JS/CJS] Folder loader with preparations', async () => {
   assert.strictEqual(arrow.toString(), '(a, b) => a + b');
   assert.strictEqual(arrow(2, 3), 5);
   assert.strictEqual(arrow(-1, 1), 0);
+
+  let simple2 = await read.script(target('examples/simple.js'), { prepare: true });
+  assert.strictEqual(typeof simple2.execute, 'function');
+  simple2 = simple2.execute();
+  assert.deepStrictEqual(Object.keys(simple2), ['field', 'sub', 'add']);
+  assert.strictEqual(simple2.field, 'value');
+  assert.strictEqual(simple2.add(2, 3), 5);
+  assert.strictEqual(simple2.sub(2, 3), -1);
 });
 
-test('Create Default Context', async () => {
-  const context = CTX.create();
-  assert.deepEqual(Object.keys(context), []);
-  assert.strictEqual(context.global, undefined);
+test('[CTX] Default', async () => {
+  const ctx = sandbox();
+  assert.deepEqual(Object.keys(ctx), []);
+  assert.strictEqual(ctx.global, undefined);
 });
 
-test('Create Common Context', async () => {
-  const context = CTX.create(CTX.NODE);
-  assert.strictEqual(typeof context, 'object');
-  assert.strictEqual(context.console, console);
-  assert.strictEqual(context.global, global);
+test('[CTX] Common', async () => {
+  const ctx = sandbox(sandbox.NODE);
+  assert.strictEqual(typeof ctx, 'object');
+  assert.strictEqual(ctx.console, console);
+  assert.strictEqual(ctx.global, global);
 });
 
-test('Create Custom Context', async () => {
-  const sandbox = { field: 'value' };
-  sandbox.global = sandbox;
-  const context = CTX.create(Object.freeze(sandbox));
-  assert.strictEqual(context.field, 'value');
-  assert.deepEqual(Object.keys(context), ['field', 'global']);
-  assert.strictEqual(context.global, sandbox);
+test('[CTX] Custom', async () => {
+  const context = { field: 'value' };
+  context.global = context;
+  const ctx = sandbox(Object.freeze(context));
+  assert.strictEqual(ctx.field, 'value');
+  assert.deepEqual(Object.keys(ctx), ['field', 'global']);
+  assert.strictEqual(ctx.global, context);
 });
 
-test('[JS/CJS] Access internal not permitted', async () => {
+test('[Sanbox access] Internal', async () => {
   try {
-    const ms = Script.execute(`const fs = require('fs');`, { type: 'cjs' });
-    assert.strictEqual(ms, undefined);
+    const result = Script.execute(`const fs = require('fs');`);
+    assert.strictEqual(result, undefined);
   } catch (err) {
     assert.strictEqual(err.message, `Access denied 'fs'`);
   }
-
-  try {
-    const ms = Script.execute(`const fs = require('fs');`);
-    assert.strictEqual(ms, undefined);
-  } catch (err) {
-    assert.strictEqual(err.message, `Access denied 'fs'`);
-  }
 });
 
-test('[JS/CJS] Access non-existent not permitted', async () => {
+test('[Sanbox access] Non-existent', async () => {
   try {
     const src = `const notExist = require('nothing');`;
-    const ms = Script.execute(src, { type: 'cjs' });
-    assert.strictEqual(ms, undefined);
+    const result = Script.execute(src);
+    assert.strictEqual(result, undefined);
   } catch (err) {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
 
   try {
     const src = `const notExist = require('nothing');`;
-    const ms = Script.execute(src);
-    assert.strictEqual(ms, undefined);
+    const result = Script.execute(src);
+    assert.strictEqual(result, undefined);
   } catch (err) {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
