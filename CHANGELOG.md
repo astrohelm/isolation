@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+## [1.2.0][] - 2023-10-25
+
+- Fix type definitions
+- New default global variables
+- Tests
+
 ## [1.1.0][] - 2023-10-01
 
 ### Major updates

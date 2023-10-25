@@ -7,7 +7,7 @@ const { require: read, sandbox } = require('../..');
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('[Core] Simple.js', async () => {
+test('[CORE] Simple.js', async () => {
   const ms = await read.script(target('simple.js'));
 
   assert.deepStrictEqual(Object.keys(ms), ['field', 'add', 'sub']);
@@ -16,7 +16,7 @@ test('[Core] Simple.js', async () => {
   assert.strictEqual(ms.sub(2, 3), -1);
 });
 
-test('[Core] Simple (from non extension file)', async () => {
+test('[CORE] Simple (from non extension file)', async () => {
   const ms = await read.script(target('simple'));
 
   assert.deepStrictEqual(Object.keys(ms), ['field', 'add', 'sub']);
@@ -25,7 +25,7 @@ test('[Core] Simple (from non extension file)', async () => {
   assert.strictEqual(ms.sub(2, 3), -1);
 });
 
-test('[Core] Complex.js', async () => {
+test('[CORE] Complex.js', async () => {
   const ctx = sandbox({ setTimeout });
   const options = { filename: 'CUSTOM FILE NAME', ctx };
   const ms = await read.script(target('complex.js'), options);
@@ -38,7 +38,7 @@ test('[Core] Complex.js', async () => {
   });
 });
 
-test('[Core] Function.js', async () => {
+test('[CORE] Function.js', async () => {
   const ms = await read.script(target('function.js'));
 
   assert.strictEqual(typeof ms, 'function');
@@ -46,7 +46,7 @@ test('[Core] Function.js', async () => {
   assert.strictEqual(ms.bind(null, 3)(4), 12);
 });
 
-test('[Core] Arrow.js', async () => {
+test('[CORE] Arrow.js', async () => {
   const ms = await read.script(target('arrow.js'));
 
   assert.strictEqual(typeof ms, 'function');
@@ -55,7 +55,7 @@ test('[Core] Arrow.js', async () => {
   assert.strictEqual(ms(-1, 1), 0);
 });
 
-test('[Core] Async.js', async () => {
+test('[CORE] Async.js', async () => {
   const ms = await read.script(target('async.js'));
   const result = await ms('str', { field: 'value' });
 
@@ -65,7 +65,7 @@ test('[Core] Async.js', async () => {
   assert.rejects(ms('', { field: 'value' }));
 });
 
-test('[Core] Local.js', async () => {
+test('[CORE] Local.js', async () => {
   const ms = await read.script(target('local.js'));
   const result = await ms('str');
 

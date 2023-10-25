@@ -29,7 +29,7 @@ type TRead = {
  * Astroctx.require('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
  * Astroctx.require('./path/to', { deep: true }).then(console.log); // Output: { script: any, deep: { script: any } }
  */
-export class Script {
+export = class Script {
   /**
    * @description Equivalent to __filename
    */
@@ -51,4 +51,4 @@ export class Script {
    * @description Run prepared scripts
    */
   execute: (ctx?: Context) => unknown;
-}
+};

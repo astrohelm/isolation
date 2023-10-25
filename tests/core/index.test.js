@@ -6,7 +6,7 @@ const Script = require('../..');
 const { sandbox, require: read } = Script;
 const target = name => path.join(__dirname, name);
 
-test('[Core] Script executor', async () => {
+test('[CORE] Script executor', async () => {
   const script = new Script(`module.exports = ({field: 'value'});`);
   assert.strictEqual(script.name, 'Astro');
   assert.strictEqual(script.dir, process.cwd());
@@ -16,7 +16,7 @@ test('[Core] Script executor', async () => {
   assert.strictEqual(result.field, 'value');
 });
 
-test('[Core] Script executor extended', async () => {
+test('[CORE] Script executor extended', async () => {
   const script = Script.prepare(`module.exports = a + b`);
   assert.strictEqual(script.name, 'Astro');
   assert.strictEqual(script.dir, process.cwd());
@@ -25,7 +25,7 @@ test('[Core] Script executor extended', async () => {
   assert.strictEqual(script.execute({ a: 2, b: 3 }), 5);
 });
 
-test('[Core] Npm isolation check', async () => {
+test('[CORE] Npm isolation check', async () => {
   const access = () => true;
   const script = Script.prepare(`module.exports = require('chalk')`, {
     access,
@@ -35,7 +35,7 @@ test('[Core] Npm isolation check', async () => {
   assert.strictEqual(typeof script.execute(), 'function');
 });
 
-test('[Reader] Script loader', async () => {
+test('[READER] Script loader', async () => {
   const simple = await read.script(target('examples/simple.js'));
 
   assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
@@ -44,7 +44,7 @@ test('[Reader] Script loader', async () => {
   assert.strictEqual(simple.sub(2, 3), -1);
 });
 
-test('[Reader] Access control', async () => {
+test('[READER] Access control', async () => {
   const access = { internal: path => !path.endsWith('simple.js') && !path.endsWith('.json') };
   const scripts = await read(target('examples'), { access });
   const { deep } = scripts;
@@ -59,7 +59,7 @@ test('[Reader] Access control', async () => {
   assert.strictEqual(arrow(-1, 1), 0);
 });
 
-test('[Reader] Folder loader', async () => {
+test('[READER] Folder loader', async () => {
   const access = { internal: path => !path.endsWith('.json') };
   const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
@@ -79,7 +79,7 @@ test('[Reader] Folder loader', async () => {
   assert.strictEqual(arrow(-1, 1), 0);
 });
 
-test('[Reader] Universal loader', async () => {
+test('[READER] Universal loader', async () => {
   const access = path => !path.endsWith('.json');
   const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
@@ -99,7 +99,7 @@ test('[Reader] Universal loader', async () => {
   assert.strictEqual(arrow(-1, 1), 0);
 });
 
-test('[Reader] Deep option', async () => {
+test('[READER] Deep option', async () => {
   const access = path => !path.endsWith('.json');
   const scripts = await read(target('examples'), { access }, false);
   const { simple } = scripts;
@@ -113,7 +113,7 @@ test('[Reader] Deep option', async () => {
   assert.strictEqual(simple.sub(2, 3), -1);
 });
 
-test('[Reader] prepare option', async () => {
+test('[READER] prepare option', async () => {
   const access = path => !path.endsWith('.json');
   const scripts = await read.dir(target('examples'), { prepare: true, access });
   const { deep } = scripts;
@@ -167,7 +167,7 @@ test('[CTX] Custom', async () => {
   assert.strictEqual(ctx.global, context);
 });
 
-test('[Sanbox access] Internal', async () => {
+test('[SANDBOX] Internal', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);
@@ -176,7 +176,7 @@ test('[Sanbox access] Internal', async () => {
   }
 });
 
-test('[Sanbox access] Non-existent', async () => {
+test('[SANDBOX] Non-existent', async () => {
   try {
     const src = `const notExist = require('nothing');`;
     const result = Script.execute(src);
