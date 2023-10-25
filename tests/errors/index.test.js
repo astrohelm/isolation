@@ -9,7 +9,7 @@ const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('[Core] Eval error ', async () => {
+test('[CORE] Eval error ', async () => {
   try {
     exec(`module.exports = eval('100 * 2');`, { type: 'cjs' });
     assert.fail(new Error('Should throw an error.'));
@@ -18,7 +18,7 @@ test('[Core] Eval error ', async () => {
   }
 });
 
-test('[Core] Eval error', async () => {
+test('[CORE] Eval error', async () => {
   try {
     exec(`eval('100 * 2')`);
     assert.fail(new Error('Should throw an error.'));
@@ -27,7 +27,7 @@ test('[Core] Eval error', async () => {
   }
 });
 
-test('[Core] Error.notfound.js', async () => {
+test('[CORE] Error.notfound.js', async () => {
   let ms;
   try {
     ms = await read(target('error.notfound.js'));
@@ -38,7 +38,7 @@ test('[Core] Error.notfound.js', async () => {
   assert.strictEqual(ms, undefined);
 });
 
-test('[Core] Error.syntax.js', async () => {
+test('[CORE] Error.syntax.js', async () => {
   try {
     await read(target('error.syntax'));
     assert.fail(new Error('Should throw an error.'));
@@ -47,7 +47,7 @@ test('[Core] Error.syntax.js', async () => {
   }
 });
 
-test('[Core] Error.reference.js', async () => {
+test('[CORE] Error.reference.js', async () => {
   try {
     const script = await read(target('error.reference.js'));
     await script();
@@ -58,7 +58,7 @@ test('[Core] Error.reference.js', async () => {
   }
 });
 
-test('[Core] Call undefined as a function', async () => {
+test('[CORE] Call undefined as a function', async () => {
   try {
     const script = await read(target('error.undef.js'));
     await script();
@@ -68,7 +68,7 @@ test('[Core] Call undefined as a function', async () => {
   }
 });
 
-test('[Core] Error.reference.js Error.reference.cjs (line number)', async () => {
+test('[CORE] Error.reference.js Error.reference.cjs (line number)', async () => {
   try {
     const script = await read(target('error.reference.js'));
     await script();
@@ -91,7 +91,7 @@ test('[Core] Error.reference.js Error.reference.cjs (line number)', async () => 
   }
 });
 
-test('[Core] Error.empty.js', async () => {
+test('[CORE] Error.empty.js', async () => {
   try {
     await read(target('error.empty.js'));
     assert.fail(new Error('Should throw an error.'));

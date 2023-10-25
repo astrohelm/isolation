@@ -27,7 +27,7 @@ export type TSandbox = {
 
   /**
    * @example <caption>Nodejs global variables</caption>
-   * const NODE = { global, console, process };
+   * const NODE = { global, console, process, ...COMMON };
    */
   NODE: Context;
 

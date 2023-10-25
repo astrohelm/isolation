@@ -9,7 +9,7 @@ const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('[Sanbox access] For node internal module', async () => {
+test('[SANDBOX] For node internal module', async () => {
   const context = {};
   context.global = context;
   const src = `module.exports = { fs: require('fs') };`;
@@ -17,7 +17,7 @@ test('[Sanbox access] For node internal module', async () => {
   exec(src, { ctx, access: module => module === 'fs', type: 'cjs' });
 });
 
-test('[Sanbox access] non-existent but granted', async () => {
+test('[SANDBOX] non-existent but granted', async () => {
   try {
     const ms = exec(`module.exports = require('astroctx');`, {
       access: module => module === 'astroctx',
@@ -28,7 +28,7 @@ test('[Sanbox access] non-existent but granted', async () => {
   }
 });
 
-test('[Sanbox access] Stub', async () => {
+test('[SANDBOX] Stub', async () => {
   const src = `
     const fs = require('fs');
     module.exports = {
@@ -57,7 +57,7 @@ test('[Sanbox access] Stub', async () => {
   assert.strictEqual(res, 'stub-content');
 });
 
-test('[Sanbox access] Nested', async () => {
+test('[SANDBOX] Nested', async () => {
   const context = { console };
   context.global = sandbox;
   const src = `module.exports = require('./module.cjs');`;
@@ -76,7 +76,7 @@ test('[Sanbox access] Nested', async () => {
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[Sanbox access] Access with reader', async () => {
+test('[SANDBOX] Access with reader', async () => {
   const ms = await read.script(target('module.cjs'), {
     dir: path.join(__dirname, 'examples'),
     access: filepath => filepath === path.join(__dirname, 'examples', 'module.nested.js'),
@@ -85,7 +85,7 @@ test('[Sanbox access] Access with reader', async () => {
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[Sanbox access] Nested not permitted', async () => {
+test('[SANDBOX] Nested not permitted', async () => {
   try {
     const src = `module.exports = require('./module.cjs');`;
     exec(src, {
@@ -98,7 +98,7 @@ test('[Sanbox access] Nested not permitted', async () => {
   }
 });
 
-test('[Sandbox access] nested npm', async () => {
+test('[SANDBOX] nested npm', async () => {
   const src = `module.exports = require('node:test');`;
   const ms = exec(src, {
     access: module => module === 'node:test',
