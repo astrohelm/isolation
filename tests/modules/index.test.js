@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, require: read } = Script;
+const { sandbox, from: read } = Script;
 const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
@@ -14,7 +14,7 @@ test('[SANDBOX] For node internal module', async () => {
   context.global = context;
   const src = `module.exports = { fs: require('fs') };`;
   const ctx = sandbox(Object.freeze(context));
-  exec(src, { ctx, access: module => module === 'fs', type: 'cjs' });
+  exec(src, { ctx, access: module => module === 'fs' });
 });
 
 test('[SANDBOX] non-existent but granted', async () => {
@@ -41,7 +41,7 @@ test('[SANDBOX] Stub', async () => {
   `;
   const ms = exec(src, {
     access: {
-      sandbox: module => {
+      realm: module => {
         if (module === 'fs') {
           return {
             readFile(filename, callback) {
