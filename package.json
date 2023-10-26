@@ -1,10 +1,10 @@
 {
   "license": "MIT",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "type": "commonjs",
-  "name": "astroctx",
+  "name": "isolation",
   "homepage": "https://astrohelm.ru",
-  "description": "How often do you see libraries which mutates global variables Or how often do you check libraries actions ? Astroctx provides script isolation in custom contexts to solve this issues. And yes, this library written to prevent unexpected behavior.",
+  "description": "How often do you see libraries which mutates global variables Or how often do you check libraries actions ? This lib provides script isolation in custom contexts to solve this issues.",
   "author": "Alexander Ivanov <sashapop101@gmail.com>",
   "keywords": [
     "v8",
@@ -38,9 +38,9 @@
     "eslint:fix": "eslint --fix \"**/*.{js,ts}\""
   },
 
-  "repository": { "type": "git", "url": "git+https://github.com/astrohelm/astroctx.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/astrohelm/isolation.git" },
   "bugs": {
-    "url": "https://github.com/astrohelm/astroctx/issues",
+    "url": "https://github.com/astrohelm/isolation/issues",
     "email": "sashapop101@gmail.com"
   },
 
