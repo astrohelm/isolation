@@ -24,7 +24,7 @@ npm i isolation --save
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  const routes = Isolation.read('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error that fs doesn't allowed
+  const routes = Isolation.require('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error that fs doesn't allowed
   ```
 
   ```javascript
@@ -46,7 +46,7 @@ npm i isolation --save
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  Isolation.read('./routes');
+  Isolation.require('./routes');
   console.log('All works fine');
   console('Here it not works');
   ```
@@ -72,7 +72,7 @@ You may control access to some modules or paths of your application
 ```js
 const option = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
 Isolation.execute('module.exports = require("fs")');
-Isolation.read('./path/to/script.js');
+Isolation.require('./path/to/script.js');
 // Or
 const option2 = {
   access: {
