@@ -2,6 +2,11 @@
 
 ## [Unreleased][unreleased]
 
+## [1.3.0][] - 2023-10-26
+
+- Renamed from Astroctx -> isolation
+- Inhanced documentation
+
 ## [1.2.0][] - 2023-10-25
 
 - Fix type definitions

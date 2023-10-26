@@ -1,18 +1,18 @@
-<h1 align="center">Astroctx - VM Container for Commonjs</h1>
+<h1 align="center">Isolation</h1>
 
 **Why should i use it ?** How often do you see libraries which mutates global variables Or how often
-do you check libraries actins ? Astroctx provides script isolation in custom contexts to solve this
-issues. And yes, this library written to prevent unexpected behavior.
+do you check libraries actins ? Library provides script isolation in custom contexts to solve this
+issues. Also, isolation prevents global scope and prototypes pollution.
 
-> Also, Astropack may be useful as routing loader, if some loaded route makes an error while
-> runtime, you may recreate it - to prevent memory leaks.
+> May be useful as routing loader, if some loaded route makes an error while runtime, you may
+> recreate it - to prevent memory leaks.
 
 <h2 align="center">Installation</h2>
 
-_Warning !_ Require: commonjs syntax
+_Warning !_ Required scripts must be commonjs syntax
 
 ```bash
-npm i astroctx --save
+npm i isolation --save
 ```
 
 <h2 align="center">Basic Usage</h2>
@@ -23,8 +23,8 @@ npm i astroctx --save
 
   ```javascript
   // index.js
-  const Astroctx = require('astroctx');
-  const routes = Astroctx.read('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error that fs doesn't allowed
+  const Isolation = require('isolation');
+  const routes = Isolation.read('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error that fs doesn't allowed
   ```
 
   ```javascript
@@ -45,8 +45,8 @@ npm i astroctx --save
 
   ```javascript
   // index.js
-  const Astroctx = require('astroctx');
-  Astroctx.read('./routes');
+  const Isolation = require('isolation');
+  Isolation.read('./routes');
   console.log('All works fine');
   console('Here it not works');
   ```
@@ -71,8 +71,8 @@ You may control access to some modules or paths of your application
 
 ```js
 const option = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
-Astroctx.execute('module.exports = require("fs")');
-Astroctx.read('./path/to/script.js');
+Isolation.execute('module.exports = require("fs")');
+Isolation.read('./path/to/script.js');
 // Or
 const option2 = {
   access: {
@@ -87,14 +87,14 @@ const option2 = {
 
 ### Common js
 
-Astroctx supports only commonjs syntax from <code>v1.1.0</code> That's because currently node.vm
+Isolation supports only commonjs syntax from <code>v1.1.0</code> That's because currently node.vm
 doesn't support ecmascript syntax
 
 ```javascript
-const Astroctx = require('astroctx');
-console.log(new Astroctx(`module.exports = { field: 'value' };`).execute()); // Output: { field: 'value' }
-console.log(Astroctx.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
-Astroctx.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
+const Isolation = require('isolation');
+console.log(new Isolation(`module.exports = { field: 'value' };`).execute()); // Output: { field: 'value' }
+console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
+Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
 ```
 
 ### Context API
@@ -113,7 +113,7 @@ import  { Context, CreateContextOptions } from 'node:vm';
 ```
 
 ```javascript
-const { sandbox, execute } = require('astroctx');
+const { sandbox, execute } = require('isolation');
 const custom = sandbox({ console });
 execute(`console.log(123);`, { ctx: custom }); // Output: 123
 execute(`console.log(123);`); // No output, because different stdout stream
@@ -123,8 +123,8 @@ This will allow you to provide your custom variables to the context without requ
 with link safety. Also it can allow you to change program behavior with somthing like:
 
 ```js
-const ctx = Astroctx.sandbox({ a: 1000, b: 10 });
-const prepared = Astroctx.prepare(`module.exports = a - b`, { ctx });
+const ctx = Isolation.sandbox({ a: 1000, b: 10 });
+const prepared = Isolation.prepare(`module.exports = a - b`, { ctx });
 prepared.execute(); // Output: 990
 prepared.execute({ ...ctx, a: 0 }); // Output: -10
 prepared.execute({ ...ctx, b: 7 }); // Output: 993
@@ -140,7 +140,7 @@ Reader allow you to run scripts from files
   to run script later
 
   ```javascript
-  const { require: read } = require('astroctx');
+  const { require: read } = require('isolation');
   read('./path/to/script.js').then(console.log); // Output: result of script execution
   read('./path/to').then(console.log); // Output: { script: any }
   read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
@@ -149,14 +149,14 @@ Reader allow you to run scripts from files
   By default reader works with nested directories, to disable this behavior you can do:
 
   ```js
-  const { require: read } = require('astroctx');
+  const { require: read } = require('isolation');
   read('./path/to', {}, false);
   ```
 
 - <code>read.script</code> Allow you to read single file
 
   ```javascript
-  const { require: read } = require('astroctx');
+  const { require: read } = require('isolation');
   read.script('./path/to/script.js').then(console.log); // Output: result of script execution
   read.script('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
   ```
@@ -164,7 +164,7 @@ Reader allow you to run scripts from files
 - <code>read.dir</code> Allow you to read a directory
 
   ```javascript
-  const { require: read } = require('astroctx');
+  const { require: read } = require('isolation');
   read.script('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
   read.script('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
   read.script('./path/to', {}, false).then(console.log); // Output: { script: any }
@@ -173,42 +173,30 @@ Reader allow you to run scripts from files
 <h2>Other useful information</h2>
 
 - **Script from string** You can run any script from string, just like eval, but in custom VM
-  container. But you shouldn't use it for unknown script evaluation, it may create security issues.
+  container. But you **shouldn't use** it for unknown script evaluation, it may create **security
+  issues**.
 
   ```js
-  const Astroctx = require('astroctx');
-  console.log(Astroctx.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
-  Astroctx.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
+  const Isolation = require('isolation');
+  console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
+  Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
   ```
 
 - **Library substitution** For example it can be use to provide custom fs module, with your strict
   methods
 
   ```js
-  const { execute: exec } = require('astroctx');
-  (async () => {
-    const src = `
-      const fs = require('fs');
-      module.exports = {
-        async useStub() {
-          return new Promise((resolve) => {
-            fs.readFile('name', (err,data) => {resolve(data);});
-          });
-        }
-      };
-    `;
-    const ms = exec(src, {
-      access: {
-        sandbox: module => ({
-          fs: {
-            readFile: (filename, callback) => callback(null, 'stub-content');
-          },
-        })[module];
-      },
-    });
-    const res = await ms.useStub();
-    console.log(res);
-  })(); // Output: stub-content
+  const { execute: exec } = require('isolation');
+  const src = `
+    const fs = require('fs');
+    module.exports = fs.readFile('Isolation.js');
+  `;
+  const result = exec(src, {
+    access: {
+      sandbox: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
+    },
+  });
+  console.log(result); // Output: Isolation.js Works !
   ```
 
 ### Script Options
@@ -226,7 +214,7 @@ Reader allow you to run scripts from files
 <h2 align="center">Copyright & contributors</h2>
 
 <p align="center">
-Copyright © 2023 <a href="https://github.com/astrohelm/astroctx/graphs/contributors">Astrohelm contributors</a>.
-Astroctx is <a href="./LICENSE">MIT licensed license</a>.<br/>
-Astroctx is one of <a href="https://github.com/astrohelm">Astrohelm solutions</a>.
+Copyright © 2023 <a href="https://github.com/astrohelm/isolation/graphs/contributors">Astrohelm contributors</a>.
+This library is <a href="./LICENSE">MIT licensed license</a>.<br/>
+And it is part of <a href="https://github.com/astrohelm">Astrohelm solutions</a>.
 </p>
