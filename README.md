@@ -65,7 +65,7 @@ npm i isolation --save
 
 <h2 align="center">Details</h2>
 
-### Access controll
+### Access control
 
 You may control access to some modules or paths of your application
 
@@ -76,8 +76,8 @@ Isolation.require('./path/to/script.js');
 // Or
 const option2 = {
   access: {
-    internal: path => true, // Reader controll
-    sandbox: module => {}, // Sandbox require controll
+    reader: path => true, // Reader control
+    realm: module => {}, // Realm require control
   },
 };
 ```
@@ -193,7 +193,7 @@ Reader allow you to run scripts from files
   `;
   const result = exec(src, {
     access: {
-      sandbox: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
+      realm: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
     },
   });
   console.log(result); // Output: Isolation.js Works !
