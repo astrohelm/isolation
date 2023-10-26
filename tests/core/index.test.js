@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, require: read } = Script;
+const { sandbox, from: read } = Script;
 const target = name => path.join(__dirname, name);
 
 test('[CORE] Script executor', async () => {
@@ -45,7 +45,7 @@ test('[READER] Script loader', async () => {
 });
 
 test('[READER] Access control', async () => {
-  const access = { internal: path => !path.endsWith('simple.js') && !path.endsWith('.json') };
+  const access = { reader: path => !path.endsWith('simple.js') && !path.endsWith('.json') };
   const scripts = await read(target('examples'), { access });
   const { deep } = scripts;
   const { arrow } = deep;
@@ -60,7 +60,7 @@ test('[READER] Access control', async () => {
 });
 
 test('[READER] Folder loader', async () => {
-  const access = { internal: path => !path.endsWith('.json') };
+  const access = { reader: path => !path.endsWith('.json') };
   const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
   const { arrow } = deep;
@@ -167,7 +167,7 @@ test('[CTX] Custom', async () => {
   assert.strictEqual(ctx.global, context);
 });
 
-test('[SANDBOX] Internal', async () => {
+test('[SANDBOX] reader', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);

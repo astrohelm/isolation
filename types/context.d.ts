@@ -1,9 +1,8 @@
 /**
  * @example <caption>Sandbox usage example</caption>
- * const ctx = Astroctx.sandbox({ console, a: 1000, b: 10  });
- * const prepared = Astroctx.prepare(`a - b`);
- * prepared.execute(ctx); // Output: 990
- * prepared.execute({ ...ctx, b: 7  })); // Output: 993
+ * const realm = new Realm(`a - b`);
+ * realm.execute({ a: 1000, b: 10 }); // Output: 990
+ * realm.execute({ a: 1000, b: 20 }); // Output: 980
  */
 export type TSandbox = {
   /**
@@ -33,7 +32,7 @@ export type TSandbox = {
 
   /**
    * @example <caption>You can create custom context</caption>
-   * const ctx = Astroctx.sandbox({ console, a: 1000, b: 10  });
+   * const ctx = Realm.sandbox({ console, a: 1000, b: 10  });
    **/
   (ctx?: Context | Object, preventEscape?: boolean): Context;
 };

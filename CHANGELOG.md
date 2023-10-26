@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+## [1.4.0][] - 2023-10-26
+
+- JSDoc enhancements
+- Renamed require -> from
+- Support latest:21 nodejs version
+- Renamed Access types from [sandbox, internal] -> [realm, reader]
+
 ## [1.3.0][] - 2023-10-26
 
 - Renamed from Astroctx -> isolation
