@@ -1,6 +1,6 @@
 {
   "license": "MIT",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "type": "commonjs",
   "name": "isolation",
   "homepage": "https://astrohelm.ru",
@@ -18,6 +18,8 @@
     "astrohelm",
     "container",
     "isolation",
+    "realm",
+    "pollution-control",
     "javascript",
     "script-loader",
     "zero-dependencies"
@@ -27,7 +29,7 @@
   "types": "types/index.d.ts",
   "packageManager": "npm@9.6.4",
   "readmeFilename": "README.md",
-  "engines": { "node": "18 || 19 || 20" },
+  "engines": { "node": ">= 18" },
   "browser": {},
   "files": ["/lib", "/types"],
 

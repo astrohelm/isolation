@@ -140,34 +140,34 @@ Reader allow you to run scripts from files
   to run script later
 
   ```javascript
-  const { require: read } = require('isolation');
-  read('./path/to/script.js').then(console.log); // Output: result of script execution
-  read('./path/to').then(console.log); // Output: { script: any }
-  read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
+  const Realm = require('isolation');
+  Realm.from('./path/to/script.js').then(console.log); // Output: result of script execution
+  Realm.from('./path/to').then(console.log); // Output: { script: any }
+  Realm.from('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
   ```
 
   By default reader works with nested directories, to disable this behavior you can do:
 
   ```js
-  const { require: read } = require('isolation');
-  read('./path/to', {}, false);
+  const Realm = require('isolation');
+  Realm.from('./path/to', {}, false);
   ```
 
 - <code>read.script</code> Allow you to read single file
 
   ```javascript
-  const { require: read } = require('isolation');
-  read.script('./path/to/script.js').then(console.log); // Output: result of script execution
-  read.script('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
+  const Realm = require('isolation');
+  Realm.from.script('./path/to/script.js').then(console.log); // Output: result of script execution
+  Realm.from.script('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
   ```
 
 - <code>read.dir</code> Allow you to read a directory
 
   ```javascript
-  const { require: read } = require('isolation');
-  read.script('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
-  read.script('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
-  read.script('./path/to', {}, false).then(console.log); // Output: { script: any }
+  const Realm = require('isolation');
+  Realm.from.script('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
+  Realm.from.script('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
+  Realm.from.script('./path/to', {}, false).then(console.log); // Output: { script: any }
   ```
 
 <h2>Other useful information</h2>
@@ -186,12 +186,12 @@ Reader allow you to run scripts from files
   methods
 
   ```js
-  const { execute: exec } = require('isolation');
+  const Realm = require('isolation');
   const src = `
     const fs = require('fs');
     module.exports = fs.readFile('Isolation.js');
   `;
-  const result = exec(src, {
+  const result = Realm.execute(src, {
     access: {
       sandbox: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
     },
