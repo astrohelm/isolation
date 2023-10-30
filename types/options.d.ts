@@ -4,7 +4,7 @@ type TSpecific = <RES>(path: string) => RES;
 /**
  * @example
  * ({
- *    dir: '/tests', //? __dirname variable, internal require startpoint
+ *    dir: '/tests', //? __dirname variable, realm require startpoint
  *    filename: 'index.js', //? __filename variable
  *    npmIsolation: true, //? Intenal dependencies will be loaded with isolation, default is false
  *    ctx: { console, A: 5, B: 'Hello world' }, //? Inject global variables, default {}
@@ -25,4 +25,5 @@ export interface TOptions {
 
 export interface TOptionsReader extends Omit<TOptions, 'type'> {
   prepare?: boolean; // By default false
+  depth?: boolean | number; // By default true
 }

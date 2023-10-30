@@ -2,6 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+## [1.5.0][] - 2023-10-30
+
+- Depth field, now you can limit depth
+- Method <code>from</code> now allow to pass code and pathname as source
+- Renamed default script name "Astro" -> "ISO"
+- Code quality improvements
+- Performance improvements
+
 ## [1.4.0][] - 2023-10-26
 
 - JSDoc enhancements

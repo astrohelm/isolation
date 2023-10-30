@@ -1,4 +1,6 @@
 'use strict';
 
-module.exports = require('./lib/script');
-module.exports.from = require('./lib/reader');
+const [Script, parser] = [require('./lib/script'), require('./lib/parser')];
+
+module.exports = Script;
+module.exports.from = parser;

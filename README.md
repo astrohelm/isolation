@@ -134,15 +134,17 @@ prepared.execute({ ...ctx, b: 7 }); // Output: 993
 
 Reader allow you to run scripts from files
 
-- <code>read</code> Allow you to read files or directories
+> Note: You should use specific methods to have better performance.
 
-  You should use specific methods to have better performance. Option <code>prepare</code> allow you
-  to run script later
+- <code>from</code> Allow you to execute scripts from file, directories or source code
+
+  - Option <code>prepare</code> allow you to execute script later
+  - Option <code>depth</code> allow you to pull scripts from nested directories
 
   ```javascript
   const Realm = require('isolation');
   Realm.from('./path/to/script.js').then(console.log); // Output: result of script execution
-  Realm.from('./path/to').then(console.log); // Output: { script: any }
+  Realm.from('./path/to', { depth: 2 }).then(console.log); // Output: { script: any }
   Realm.from('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
   ```
 
@@ -150,24 +152,24 @@ Reader allow you to run scripts from files
 
   ```js
   const Realm = require('isolation');
-  Realm.from('./path/to', {}, false);
+  Realm.from('./path/to', { depth: false });
   ```
 
-- <code>read.script</code> Allow you to read single file
+- <code>from.file</code> Allow you to read single file
 
   ```javascript
   const Realm = require('isolation');
-  Realm.from.script('./path/to/script.js').then(console.log); // Output: result of script execution
-  Realm.from.script('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
+  Realm.from.file('./path/to/script.js').then(console.log); // Output: result of script execution
+  Realm.from.file('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
   ```
 
-- <code>read.dir</code> Allow you to read a directory
+- <code>from.dir</code> Allow you to read a directory
 
   ```javascript
   const Realm = require('isolation');
-  Realm.from.script('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
-  Realm.from.script('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
-  Realm.from.script('./path/to', {}, false).then(console.log); // Output: { script: any }
+  Realm.from.dir('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
+  Realm.from.dir('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
+  Realm.from.dir('./path/to', { depth: false }).then(console.log); // Output: { script: any }
   ```
 
 <h2>Other useful information</h2>
@@ -201,14 +203,18 @@ Reader allow you to run scripts from files
 
 ### Script Options
 
-- **filename**: Stands for the name of the module, by default it's empty string
-- **dir**: Stands for the name of the module directory, by default <code>process.cwd()</code>
+- **filename**: Stands for the name of the module, by default it's empty string (\_\_filename)
+- **dir**: Stands for the name of the module directory (realm require startpoint & \_\_dirname), by
+  default <code>process.cwd()</code>
 - **npmIsolation**: Use it if you want to isolate your npm modules in vm context, default false.
+  (May require to provide dependencies)
 - **ctx**: See Context API
 - **access**: See Access API
-- **prepare**: Works only with read API. Functions, where this option provided, will return
-  intermediate object and you will be able to finish execution later. Script has alternative to this
-  option - <code>prepare method</code>.
+- **depth**: [Works only with read API] Dir readder will be limited by depth. _Default true_, that
+  means it will read all lvls of nested directories. You can disable it by providing 0 or false
+  values.
+- **prepare**: [Works only with read API] Readder will return intermediate object, You will be able
+  to execute it later. Script has alternative to this option - <code>prepare method</code>.
 - **script** & **run** This options allow you to configure VM.Script initialization & execution.
 
 <h2 align="center">Copyright & contributors</h2>
