@@ -1,7 +1,7 @@
 <h1 align="center">Isolation</h1>
 
 **Why should i use it ?** How often do you see libraries which mutates global variables Or how often
-do you check libraries actins ? Library provides script isolation in custom contexts to solve this
+do you check libraries actions ? Library provides script isolation in custom contexts to solve this
 issues. Also, isolation prevents global scope and prototypes pollution.
 
 > May be useful as routing loader, if some loaded route makes an error while runtime, you may
