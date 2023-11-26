@@ -2,6 +2,23 @@
 
 ## [Unreleased][unreleased]
 
+<<<<<<< Updated upstream
+=======
+## [1.6.0][] - 2023-11-26
+
+- Code quality improvements
+- Changelog linking fixes
+- Npm published
+
+## [1.5.0][] - 2023-10-30
+
+- Depth field, now you can limit depth
+- Method <code>from</code> now allow to pass code and pathname as source
+- Renamed default script name "Astro" -> "ISO"
+- Code quality improvements
+- Performance improvements
+
+>>>>>>> Stashed changes
 ## [1.4.0][] - 2023-10-26
 
 - JSDoc enhancements
@@ -77,6 +94,11 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/astroctx/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/astrohelm/astroctx/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/astrohelm/astroctx/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/astrohelm/astroctx/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/astrohelm/astroctx/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/astrohelm/astroctx/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/astrohelm/astroctx/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/astrohelm/astroctx/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/astrohelm/astroctx/releases/tag/v1.0.0
