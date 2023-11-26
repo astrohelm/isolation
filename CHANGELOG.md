@@ -2,8 +2,6 @@
 
 ## [Unreleased][unreleased]
 
-<<<<<<< Updated upstream
-=======
 ## [1.6.0][] - 2023-11-26
 
 - Code quality improvements
@@ -18,7 +16,6 @@
 - Code quality improvements
 - Performance improvements
 
->>>>>>> Stashed changes
 ## [1.4.0][] - 2023-10-26
 
 - JSDoc enhancements
