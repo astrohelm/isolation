@@ -8,7 +8,7 @@ type TMap<value> = { [key: string]: value };
 type TRead = {
   (path: string, options?: TOptionsReader): Promise<Script | unknown>;
   script: (path: string, options?: TOptionsReader) => Promise<Script | unknown>;
-  dir: (path: string, options?: TOptionsReader, deep?: boolean) => Promise<TMap<unknown | Script>>;
+  dir: (path: string, options?: TOptionsReader) => Promise<TMap<unknown | Script>>;
 };
 
 /**

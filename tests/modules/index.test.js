@@ -77,7 +77,7 @@ test('[SANDBOX] Nested', async () => {
 });
 
 test('[SANDBOX] Access with reader', async () => {
-  const ms = await read.script(target('module.cjs'), {
+  const ms = await read.file(target('module.cjs'), {
     dir: path.join(__dirname, 'examples'),
     access: filepath => filepath === path.join(__dirname, 'examples', 'module.nested.js'),
   });
