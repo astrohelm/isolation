@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, from: read } = Script;
+const { sandbox, read } = Script;
 const target = name => path.join(__dirname, name);
 
 test('[CORE] Script executor', async () => {

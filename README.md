@@ -24,7 +24,7 @@ npm i isolation --save
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  const routes = Isolation.require('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error that fs doesn't allowed
+  const routes = Isolation.read('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error because fs doesn't allowed
   ```
 
   ```javascript
@@ -41,14 +41,14 @@ npm i isolation --save
 
 - **Prevent unintentionally damage**
 
-  This solves problem where libraries used to mutate at global variables.
+  This solves problem where libraries used to mutate global variables.
 
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  Isolation.require('./routes');
+  Isolation.read('./routes');
   console.log('All works fine');
-  console('Here it not works');
+  console('Here it not works'); // Will throw error
   ```
 
   ```javascript
@@ -59,7 +59,8 @@ npm i isolation --save
 
   ```javascript
   // unchecked-dangerous-library index.js
-  global.console = msg => process.stdout.write(msg); // Someone just want different implementation for console
+  var console = msg => process.stdout.write(msg); // Someone just want different implementation for console
+  global.console = console;
   console('Here it works fine');
   ```
 
@@ -70,11 +71,11 @@ npm i isolation --save
 You may control access to some modules or paths of your application
 
 ```js
-const option = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
-Isolation.execute('module.exports = require("fs")');
-Isolation.require('./path/to/script.js');
+const options = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
+Isolation.execute('module.exports = require("fs")', options);
+Isolation.read('./path/to/script.js', options);
 // Or
-const option2 = {
+const options2 = {
   access: {
     reader: path => true, // Reader control
     realm: module => {}, // Realm require control
@@ -97,9 +98,13 @@ console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // O
 Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
 ```
 
+> You always should use module.exports to recieve results
+
 ### Context API
 
 You can create custom context or use default presets with context api.
+
+> Default contexts are accessible from Isolation.sandbox
 
 ```typescript
 import  { Context, CreateContextOptions } from 'node:vm';
@@ -120,56 +125,60 @@ execute(`console.log(123);`); // No output, because different stdout stream
 ```
 
 This will allow you to provide your custom variables to the context without requiring any module and
-with link safety. Also it can allow you to change program behavior with somthing like:
+with link safety. Also its allow you to change program behavior with something like:
 
 ```js
 const ctx = Isolation.sandbox({ a: 1000, b: 10 });
-const prepared = Isolation.prepare(`module.exports = a - b`, { ctx });
-prepared.execute(); // Output: 990
-prepared.execute({ ...ctx, a: 0 }); // Output: -10
-prepared.execute({ ...ctx, b: 7 }); // Output: 993
+const realm = new Isolation(`module.exports = a - b`, { ctx });
+realm.execute(); // Output: 990
+realm.execute({ ...ctx, a: 0 }); // Output: -10
+realm.execute({ ...ctx, b: 7 }); // Output: 993
+// Or with direct way
+Isolation.execute(`module.exports = a - b`, { ctx }); // 900
+Isolation.execute(`module.exports = a - b`, {}, { ...ctx, a: 0 }); // -10
+Isolation.execute(`module.exports = a - b`, {}, { ...ctx, b: 7 }); // 993
 ```
 
 ### Reader API
 
 Reader allow you to run scripts from files
 
-> Note: You should use specific methods to have better performance.
-
-- <code>from</code> Allow you to execute scripts from file, directories or source code
+- <code>read</code> Allow you to read source codes from files and directories
 
   - Option <code>prepare</code> allow you to execute script later
   - Option <code>depth</code> allow you to pull scripts from nested directories
 
   ```javascript
   const Realm = require('isolation');
-  Realm.from('./path/to/script.js').then(console.log); // Output: result of script execution
-  Realm.from('./path/to', { depth: 2 }).then(console.log); // Output: { script: any }
-  Realm.from('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
+  Realm.read('./path/to/script.js').then(console.log); // Output: result of script execution
+  Realm.read('./path/to').then(console.log); // Output: { script: any }
+  Realm.read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
   ```
 
   By default reader works with nested directories, to disable this behavior you can do:
 
   ```js
-  const Realm = require('isolation');
-  Realm.from('./path/to', { depth: false });
+  const Isolation = require('isolation');
+  Isolation.read('./path/to', { depth: false });
+  // Or limit it:
+  Isolation.read('./path/to', { depth: 3 });
   ```
 
-- <code>from.file</code> Allow you to read single file
+- <code>read.file</code> Allow you to execute script from single file
 
   ```javascript
-  const Realm = require('isolation');
-  Realm.from.file('./path/to/script.js').then(console.log); // Output: result of script execution
-  Realm.from.file('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
+  const Isolation = require('isolation');
+  Isolation.read.file('./path/to/script.js').then(console.log); // Output: result of script execution
+  Isolation.read.file('./path/to/script.js', { prepare: true }).then(console.log); // Output: Script {}
   ```
 
-- <code>from.dir</code> Allow you to read a directory
+- <code>read.dir</code> Allow you to execute multiple scripts from directory
 
   ```javascript
-  const Realm = require('isolation');
-  Realm.from.dir('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
-  Realm.from.dir('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
-  Realm.from.dir('./path/to', { depth: false }).then(console.log); // Output: { script: any }
+  const Isolation = require('isolation');
+  Isolation.read.dir('./path/to').then(console.log); // Output: { script: any, deep: { script: any } }
+  Isolation.read.dir('./path/to', { prepare: true }).then(console.log); Output: { script: Script {} }
+  Isolation.read.dir('./path/to', { depth: false }).then(console.log); // Output: { script: any }
   ```
 
 <h2>Other useful information</h2>
@@ -188,12 +197,12 @@ Reader allow you to run scripts from files
   methods
 
   ```js
-  const Realm = require('isolation');
+  const Isolation = require('isolation');
   const src = `
     const fs = require('fs');
     module.exports = fs.readFile('Isolation.js');
   `;
-  const result = Realm.execute(src, {
+  const result = Isolation.execute(src, {
     access: {
       realm: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
     },
@@ -210,11 +219,11 @@ Reader allow you to run scripts from files
   (May require to provide dependencies)
 - **ctx**: See Context API
 - **access**: See Access API
-- **depth**: [Works only with read API] Dir readder will be limited by depth. _Default true_, that
-  means it will read all lvls of nested directories. You can disable it by providing 0 or false
-  values.
-- **prepare**: [Works only with read API] Readder will return intermediate object, You will be able
-  to execute it later. Script has alternative to this option - <code>prepare method</code>.
+- **prepare**: Works only with read API. Functions, where this option provided, will return
+  intermediate object and you will be able to finish execution later. Script has alternative to this
+  option - <code>prepare method</code>.
+- **depth**: Works only with read API. Restricts dir reading depth. By default: true, means
+  unlimited depth.
 - **script** & **run** This options allow you to configure VM.Script initialization & execution.
 
 <h2 align="center">Copyright & contributors</h2>

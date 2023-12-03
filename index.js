@@ -1,6 +1,10 @@
 'use strict';
 
-const [Script, parser] = [require('./lib/script'), require('./lib/parser')];
-
-module.exports = Script;
-module.exports.from = parser;
+const { assign, freeze } = Object;
+// prettier-ignore
+module.exports = freeze(assign(require('./lib/script'), {
+  createRequire: require('./lib/require'),
+  sandbox: require('./lib/context'),
+  read: require('./lib/reader'),
+  default: module.exports,
+}));

@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
-const { from: read, sandbox } = require('../..');
+const { read, sandbox } = require('../..');
 
 const target = name => path.join(__dirname, 'examples', name);
 

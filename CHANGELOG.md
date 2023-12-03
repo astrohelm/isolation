@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+## [1.7.0][] - 2023-12-03
+
+- Code quality improvements
+- Fixed bugs from v1.6.0
+- Library exports now support ESM & typescript
+
 ## [1.6.0][] - 2023-11-26
 
 - Code quality improvements
@@ -25,7 +31,7 @@
 
 ## [1.3.0][] - 2023-10-26
 
-- Renamed from Astroctx -> isolation
+- Renamed from isolation -> isolation
 - Inhanced documentation
 
 ## [1.2.0][] - 2023-10-25
@@ -40,22 +46,22 @@
 
 - Removed astro syntax with type option, now only supports common js syntax.
 - Context updates
-  1. Renamed to sandbox, example: <code>Astroctx.sandbox</code>
-  2. To create new contexts you should use <code>Astroctx.sandbox({ myCtxVariable: 'test' })</code>
-  3. All presets still should be working properly with <code>Astroctx.sandbox[preset-key]</code>
+  1. Renamed to sandbox, example: <code>isolation.sandbox</code>
+  2. To create new contexts you should use <code>isolation.sandbox({ myCtxVariable: 'test' })</code>
+  3. All presets still should be working properly with <code>isolation.sandbox[preset-key]</code>
 - Reader updates
   1. Joined with require, now require works as reader, examples:
      ```js
-     Astroctx.require('./my-path/to/script.js');
-     Astroctx.require.script('./my-path/to/script.js');
-     Astroctx.require.dir('./my-path/to');
+     isolation.require('./my-path/to/script.js');
+     isolation.require.script('./my-path/to/script.js');
+     isolation.require.dir('./my-path/to');
      ```
   2. New access controll feature, see access updates
 - Access updates, now this option work for both sandbox and reader, you need to provide function
   ```js
   const option = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
-  Astroctx.execute('module.exports = require("fs")');
-  Astroctx.read('./path/to/script.js');
+  isolation.execute('module.exports = require("fs")');
+  isolation.read('./path/to/script.js');
   // But you still can controll them by each own function
   const option = {
     access: {
@@ -73,7 +79,7 @@
 - NPM Isolation fix, now it should work properly
 
   ```js
-  const script = Astroctx.execute(`module.exports = require('chalk')`, {
+  const script = isolation.execute(`module.exports = require('chalk')`, {
     access: { sandbox: () => true },
     npmIsolation: true,
     ctx: sandbox.NODE,
@@ -91,11 +97,12 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/astroctx/compare/v1.6.0...HEAD
-[1.6.0]: https://github.com/astrohelm/astroctx/compare/v1.5.0...v1.6.0
-[1.5.0]: https://github.com/astrohelm/astroctx/compare/v1.4.0...v1.5.0
-[1.4.0]: https://github.com/astrohelm/astroctx/compare/v1.3.0...v1.4.0
-[1.3.0]: https://github.com/astrohelm/astroctx/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/astrohelm/astroctx/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/astrohelm/astroctx/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/astrohelm/astroctx/releases/tag/v1.0.0
+[unreleased]: https://github.com/astrohelm/isolation/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/astrohelm/isolation/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/astrohelm/isolation/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/astrohelm/isolation/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/astrohelm/isolation/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/astrohelm/isolation/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/astrohelm/isolation/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/astrohelm/isolation/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/astrohelm/isolation/releases/tag/v1.0.0

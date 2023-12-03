@@ -1,4 +1,4 @@
-import type { Context, Script, ScriptOptions, BaseOptions } from 'node:vm';
+import type { Context, Script as TScript, ScriptOptions, BaseOptions } from 'node:vm';
 import type { RunningCodeOptions, CreateContextOptions } from 'node:vm';
 import type { TOptions, TOptionsReader } from './options';
 import type { TSandbox } from './context';
@@ -6,9 +6,9 @@ import type { TSandbox } from './context';
 type TMap<value> = { [key: string]: value };
 
 type TRead = {
-  (path: string, options?: TOptionsReader): Promise<Script | unknown>;
-  script: (path: string, options?: TOptionsReader) => Promise<Script | unknown>;
-  dir: (path: string, options?: TOptionsReader) => Promise<TMap<unknown | Script>>;
+  (src: string, options?: TOptionsReader): Promise<TScript | unknown>;
+  file: (path: string, options?: TOptionsReader) => Promise<TScript | unknown>;
+  dir: (path: string, options?: TOptionsReader) => Promise<TMap<TScript | unknown>>;
 };
 
 /**
@@ -27,31 +27,38 @@ export = class Script {
 
   /**
    * @example <caption>Read Api</caption>
-   * Realm.from('./path/to/script.js').then(console.log); // Output: result of script execution
-   * Realm.from('./path/to').then(console.log); // Output: { script: any }
-   * Realm.from('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
-   * Realm.from('./path/to', { deep: true }).then(console.log); // Output: { script: any, deep: { script: any } }
+   * Isolation.read('./path/to/script.js').then(console.log); // Output: result of script execution
+   * Isolation.read('./path/to').then(console.log); // Output: { script: any }
+   * Isolation.read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
+   * Isolation.read('./path/to', { deep: true }).then(console.log); // Output: { script: any, deep: { script: any } }
+   * Isolation.read('module.exports = (a, b) => a + b').then(fn => console.log(fn(1, 2))); // 3
    */
-  static from: TRead;
+  static read: TRead;
 
   /**
    * @example <caption>Functional initialization</caption>
-   * const Realm = require('isolation');
-   * console.log(Realm.from(`({ field: 'value' });`).execute()); // Output: { field: 'value' }
+   * const Isolation = require('isolation');
+   * console.log(Isolation.read(`({ field: 'value' });`).execute()); // Output: { field: 'value' }
    */
   static prepare: (src: string, options?: TOptions) => Script;
 
   /**
    * @example <caption>Skip init process</caption>
-   * console.log(Realm.execute(`(a, b) => a + b;`)(2 + 2)); // Output: 4
-   * Realm.execute(`async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
+   * console.log(Isolation.execute(`(a, b) => a + b;`)(2 + 2)); // Output: 4
+   * Isolation.execute(`async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
    */
-  static execute: (src: string, options?: TOptions) => unknown;
+  static execute: (src: string, options?: TOptions, ctx?: Context) => unknown;
+
+  /**
+   * @example <caption>Function that creates require function for the realm</caption>
+   * const myModule = Isolation.createRequire('/parent/directory')('./myModule.js);
+   */
+  static createRequire: (dir: string, options?: TOptions) => NodeRequire;
 
   /**
    * @example <caption>Custom sandboxes</caption>
    * const ctx = { a: 1000, b: 10 }
-   * const realm = new Realm(`a - b`, { ctx });
+   * const realm = new Isolation(`a - b`, { ctx });
    * realm.execute(); // Output: 990
    * realm.execute({ ...ctx, b: 7  }); // Output: 993
    */
@@ -59,8 +66,8 @@ export = class Script {
 
   /**
    * @example <caption>Constructor initialization</caption>
-   * const Realm = require('isolation');
-   * console.log(new Realm(`({ field: 'value' });`).execute()); // Output: { field: 'value' }
+   * const Isolation = require('isolation');
+   * console.log(new Isolation(`({ field: 'value' });`).execute()); // Output: { field: 'value' }
    */
   constructor(src: string, options?: TOptions): Script;
 
