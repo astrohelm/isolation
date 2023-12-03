@@ -66,7 +66,7 @@ npm i isolation --save
 
 <h2 align="center">Details</h2>
 
-### Access controll
+### Access control
 
 You may control access to some modules or paths of your application
 
@@ -77,8 +77,8 @@ Isolation.read('./path/to/script.js', options);
 // Or
 const options2 = {
   access: {
-    internal: path => true, // Reader controll
-    sandbox: module => {}, // Sandbox require controll
+    reader: path => true, // Reader control
+    realm: module => {}, // Realm require control
   },
 };
 ```
@@ -143,10 +143,10 @@ Isolation.execute(`module.exports = a - b`, {}, { ...ctx, b: 7 }); // 993
 
 Reader allow you to run scripts from files
 
-- <code>from</code> Allow you to read source codes from files, directories or direct string
+- <code>read</code> Allow you to read source codes from files and directories
 
-  You should use specific methods to have better performance. Option <code>prepare</code> allow you
-  to run script later
+  - Option <code>prepare</code> allow you to execute script later
+  - Option <code>depth</code> allow you to pull scripts from nested directories
 
   ```javascript
   const Realm = require('isolation');
@@ -204,7 +204,7 @@ Reader allow you to run scripts from files
   `;
   const result = Isolation.execute(src, {
     access: {
-      sandbox: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
+      realm: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
     },
   });
   console.log(result); // Output: Isolation.js Works !
@@ -212,9 +212,11 @@ Reader allow you to run scripts from files
 
 ### Script Options
 
-- **filename**: Stands for the name of the module, by default it's empty string
-- **dir**: Stands for the name of the module directory, by default <code>process.cwd()</code>
+- **filename**: Stands for the name of the module, by default it's empty string (\_\_filename)
+- **dir**: Stands for the name of the module directory (realm require startpoint & \_\_dirname), by
+  default <code>process.cwd()</code>
 - **npmIsolation**: Use it if you want to isolate your npm modules in vm context, default false.
+  (May require to provide dependencies)
 - **ctx**: See Context API
 - **access**: See Access API
 - **prepare**: Works only with read API. Functions, where this option provided, will return
