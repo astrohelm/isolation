@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { from: read } = Script;
+const { read } = Script;
 const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);

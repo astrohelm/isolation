@@ -3,12 +3,12 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
-const { from: read, sandbox } = require('../..');
+const { read, sandbox } = require('../..');
 
 const target = name => path.join(__dirname, 'examples', name);
 
 test('[CORE] Simple.js', async () => {
-  const ms = await read.script(target('simple.js'));
+  const ms = await read.file(target('simple.js'));
 
   assert.deepStrictEqual(Object.keys(ms), ['field', 'add', 'sub']);
   assert.strictEqual(ms.field, 'value');
@@ -17,7 +17,7 @@ test('[CORE] Simple.js', async () => {
 });
 
 test('[CORE] Simple (from non extension file)', async () => {
-  const ms = await read.script(target('simple'));
+  const ms = await read.file(target('simple'));
 
   assert.deepStrictEqual(Object.keys(ms), ['field', 'add', 'sub']);
   assert.strictEqual(ms.field, 'value');
@@ -28,7 +28,7 @@ test('[CORE] Simple (from non extension file)', async () => {
 test('[CORE] Complex.js', async () => {
   const ctx = sandbox({ setTimeout });
   const options = { filename: 'CUSTOM FILE NAME', ctx };
-  const ms = await read.script(target('complex.js'), options);
+  const ms = await read.file(target('complex.js'), options);
 
   await ms.add(2, 3, (err, sum) => {
     assert.strictEqual(err.constructor.name === 'Error', true);
@@ -39,7 +39,7 @@ test('[CORE] Complex.js', async () => {
 });
 
 test('[CORE] Function.js', async () => {
-  const ms = await read.script(target('function.js'));
+  const ms = await read.file(target('function.js'));
 
   assert.strictEqual(typeof ms, 'function');
   assert.strictEqual(ms(2, 3), 6);
@@ -47,7 +47,7 @@ test('[CORE] Function.js', async () => {
 });
 
 test('[CORE] Arrow.js', async () => {
-  const ms = await read.script(target('arrow.js'));
+  const ms = await read.file(target('arrow.js'));
 
   assert.strictEqual(typeof ms, 'function');
   assert.strictEqual(ms.toString(), '(a, b) => a + b');
@@ -56,7 +56,7 @@ test('[CORE] Arrow.js', async () => {
 });
 
 test('[CORE] Async.js', async () => {
-  const ms = await read.script(target('async.js'));
+  const ms = await read.file(target('async.js'));
   const result = await ms('str', { field: 'value' });
 
   assert.strictEqual(typeof ms, 'function');
@@ -66,7 +66,7 @@ test('[CORE] Async.js', async () => {
 });
 
 test('[CORE] Local.js', async () => {
-  const ms = await read.script(target('local.js'));
+  const ms = await read.file(target('local.js'));
   const result = await ms('str');
 
   assert.deepEqual(result, { args: ['str'], local: 'hello' });

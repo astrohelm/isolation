@@ -23,6 +23,19 @@ export interface TOptions {
   script?: ScriptOptions;
 }
 
-export interface TOptionsReader extends Omit<TOptions, 'type'> {
+/**
+ * @example
+ * ({
+ *    dir: '/tests', //? __dirname variable, internal require startpoint
+ *    filename: 'index.js', //? __filename variable
+ *    npmIsolation: true, //? Intenal dependencies will be loaded with isolation, by default false
+ *    ctx: { console, A: 5, B: 'Hello world' }, //? Inject global variables, default {}
+ *    access: (name, type) => true, //? Controll access to Realm submodules or reader API
+ *    prepare: true, //?  If true, reader will return unexecuted script, by default false
+ *    depth: 5, //? If true, reader will go through all depth folders, by default true
+ * })
+ */
+export interface TOptionsReader {
   prepare?: boolean; // By default false
+  depth?: boolean | number; // By default true
 }

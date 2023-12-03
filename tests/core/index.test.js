@@ -3,12 +3,12 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, from: read } = Script;
+const { sandbox, read } = Script;
 const target = name => path.join(__dirname, name);
 
 test('[CORE] Script executor', async () => {
   const script = new Script(`module.exports = ({field: 'value'});`);
-  assert.strictEqual(script.name, 'Astro');
+  assert.strictEqual(script.name, 'ISO');
   assert.strictEqual(script.dir, process.cwd());
   assert.strictEqual(typeof script.execute, 'function');
   const result = script.execute();
@@ -18,7 +18,7 @@ test('[CORE] Script executor', async () => {
 
 test('[CORE] Script executor extended', async () => {
   const script = Script.prepare(`module.exports = a + b`);
-  assert.strictEqual(script.name, 'Astro');
+  assert.strictEqual(script.name, 'ISO');
   assert.strictEqual(script.dir, process.cwd());
   assert.strictEqual(typeof script.execute, 'function');
   assert.strictEqual(script.execute({ a: 2, b: 2 }), 4);
@@ -36,7 +36,7 @@ test('[CORE] Npm isolation check', async () => {
 });
 
 test('[READER] Script loader', async () => {
-  const simple = await read.script(target('examples/simple.js'));
+  const simple = await read.file(target('examples/simple.js'));
 
   assert.deepStrictEqual(Object.keys(simple), ['field', 'sub', 'add']);
   assert.strictEqual(simple.field, 'value');
@@ -101,7 +101,7 @@ test('[READER] Universal loader', async () => {
 
 test('[READER] Deep option', async () => {
   const access = path => !path.endsWith('.json');
-  const scripts = await read(target('examples'), { access }, false);
+  const scripts = await read(target('examples'), { access, depth: 1 });
   const { simple } = scripts;
 
   assert.strictEqual(typeof scripts, 'object');
@@ -136,7 +136,7 @@ test('[READER] prepare option', async () => {
   assert.strictEqual(arrow(2, 3), 5);
   assert.strictEqual(arrow(-1, 1), 0);
 
-  let simple2 = await read.script(target('examples/simple.js'), { prepare: true });
+  let simple2 = await read.file(target('examples/simple.js'), { prepare: true });
   assert.strictEqual(typeof simple2.execute, 'function');
   simple2 = simple2.execute();
   assert.deepStrictEqual(Object.keys(simple2), ['field', 'sub', 'add']);
