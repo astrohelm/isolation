@@ -2,6 +2,15 @@
 
 ## [Unreleased][unreleased]
 
+## [1.8.0][] - 2023-12-08
+
+- Return of type system
+  ```js
+  Script.execute('2 + 2', { type: 'iso' });
+  Script.execute('module.exports = 2 + 2', { type: 'cjs' });
+  ```
+- Test coverage enhancement
+
 ## [1.7.0][] - 2023-12-03
 
 - Code quality improvements

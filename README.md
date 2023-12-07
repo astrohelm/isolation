@@ -187,9 +187,11 @@ Reader allow you to run scripts from files
   container. But you **shouldn't use** it for unknown script evaluation, it may create **security
   issues**.
 
+  > For running expressions you should use ISO Mode
+
   ```js
   const Isolation = require('isolation');
-  console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
+  console.log(Isolation.execute(`(a, b) => a + b;`, { type: 'iso' })(2 + 2)); // Output: 4
   Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
   ```
 
@@ -212,6 +214,9 @@ Reader allow you to run scripts from files
 
 ### Script Options
 
+- **type**: <code>iso/cjs</code> Type of script wrapping, by default <code>cjs</code>, in iso mode
+  script would not inject global variables such as require, **filename**, **dirname**, **module**
+  and **exports**, also it will export result of the last expression
 - **filename**: Stands for the name of the module, by default it's empty string (\_\_filename)
 - **dir**: Stands for the name of the module directory (realm require startpoint & \_\_dirname), by
   default <code>process.cwd()</code>
