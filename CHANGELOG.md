@@ -2,6 +2,15 @@
 
 ## [Unreleased][unreleased]
 
+## [1.8.0][] - 2023-12-08
+
+- Return of type system
+  ```js
+  Script.execute('2 + 2', { type: 'iso' });
+  Script.execute('module.exports = 2 + 2', { type: 'cjs' });
+  ```
+- Test coverage enhancement
+
 ## [1.7.0][] - 2023-12-03
 
 - Code quality improvements
@@ -97,7 +106,8 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v1.7.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/astrohelm/isolation/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/astrohelm/isolation/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/astrohelm/isolation/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/astrohelm/isolation/compare/v1.4.0...v1.5.0

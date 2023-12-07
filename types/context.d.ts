@@ -1,6 +1,6 @@
 /**
  * @example <caption>Sandbox usage example</caption>
- * const realm = new Isolation(`a - b`);
+ * const realm = new Isolation('a - b', { type: 'iso' });
  * realm.execute({ a: 1000, b: 10 }); // Output: 990
  * realm.execute({ a: 1000, b: 20 }); // Output: 980
  */

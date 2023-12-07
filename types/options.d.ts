@@ -12,9 +12,10 @@ type TSpecific = <RES>(path: string) => RES;
  * })
  */
 export interface TOptions {
-  dir?: string;
-  filename?: string;
-  npmIsolation?: boolean;
+  dir?: string; // proccess.cwd()
+  filename?: string; // ISO
+  npmIsolation?: boolean; // false;
+  type?: 'cjs' | 'iso'; // cjs
 
   access?: { sandbox?: TSpecific<boolean | object>; internal?: TSpecific<boolean> } | TAccess;
   ctx?: Context | { [key: string]: unknown };
@@ -26,6 +27,7 @@ export interface TOptions {
 /**
  * @example
  * ({
+ *    type: 'cjs', //? cjs mode injects global variables, in iso mode script will export result of last expression
  *    dir: '/tests', //? __dirname variable, internal require startpoint
  *    filename: 'index.js', //? __filename variable
  *    npmIsolation: true, //? Intenal dependencies will be loaded with isolation, by default false

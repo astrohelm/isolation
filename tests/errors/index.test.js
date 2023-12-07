@@ -49,11 +49,12 @@ test('[CORE] Error.syntax.js', async () => {
 
 test('[CORE] Error.reference.js', async () => {
   try {
-    const script = await read(target('error.reference.js'));
+    const script = await read(target('error.reference.js'), { type: 'iso' });
     await script();
 
     assert.fail(new Error('Should throw an error.'));
   } catch (err) {
+    console.log(err);
     assert.strictEqual(err.constructor.name, 'ReferenceError');
   }
 });
@@ -70,14 +71,14 @@ test('[CORE] Call undefined as a function', async () => {
 
 test('[CORE] Error.reference.js Error.reference.cjs (line number)', async () => {
   try {
-    const script = await read(target('error.reference.js'));
+    const script = await read(target('error.reference.js'), { type: 'iso' });
     await script();
 
     assert.fail(new Error('Should throw an error.'));
   } catch (err) {
     const [, firstLine] = err.stack.split('\n');
     const [, lineNumber] = firstLine.split(':');
-    assert.strictEqual(parseInt(lineNumber, 10), 2);
+    assert.strictEqual(parseInt(lineNumber, 10), 4);
   }
 
   try {
@@ -87,7 +88,7 @@ test('[CORE] Error.reference.js Error.reference.cjs (line number)', async () => 
   } catch (err) {
     const [, firstLine] = err.stack.split('\n');
     const [, lineNumber] = firstLine.split(':');
-    assert.strictEqual(parseInt(lineNumber, 10), 4);
+    assert.strictEqual(parseInt(lineNumber, 10), 5);
   }
 });
 
@@ -98,4 +99,9 @@ test('[CORE] Error.empty.js', async () => {
   } catch (err) {
     assert.strictEqual(err.constructor.name, 'SyntaxError');
   }
+});
+
+test('[CORE] Type iso', async () => {
+  const result = exec('2 + 2', { type: 'iso' });
+  assert.strictEqual(result, 4);
 });
