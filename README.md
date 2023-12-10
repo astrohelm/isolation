@@ -280,18 +280,18 @@ console.log(result); // Output: Isolation.js Works !
 
 <div align="center">
 
-| Option           | Possible                                       | Default                        | Description                                                               |
-| ---------------- | ---------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
-| **type**         | iso\|cjs                                       | cjs                            | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types) |
-| **ctx**          | object                                         | {}                             | Realm&nbsp;context, see [Context API](#context-api)                       |
-| **filename**     | string                                         | ISO                            | Name&nbsp;of&nbsp;the&nbsp;module, variable (\_\_filename)                |
-| **dir**          | string                                         | process.cwd()                  | Module&nbsp;directory variable (\_\dirname)                               |
-| **npmIsolation** | boolean                                        | false                          | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                             |
-| **access**       | [Access](./types/options.d.ts#L22)             | {}                             | Isolation&nbsp;restrictions, see [Access API](#reader-api)                |
-| **prepare**      | boolean                                        | false                          | Reader&nbsp;would'nt&nbsp;execute script for you                          |
-| **depth**        | boolean\|number                                | true                           | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                |
-| **script**       | [ScriptOptions](./types/options.d.ts#L26)      | {}                             | Configuration&nbsp;for VM.Script initialization                           |
-| **run**          | [RunningCodeOptions](./types/options.d.ts#L25) | <code>{ timeout: 1000 }</code> | Configuration&nbsp;for VM.Script execution                                |
+| Option           | Possible                                       | Default              | Description                                                               |
+| ---------------- | ---------------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
+| **type**         | iso\|cjs                                       | cjs                  | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types) |
+| **ctx**          | object                                         | {}                   | Realm&nbsp;context, see [Context API](#context-api)                       |
+| **filename**     | string                                         | ISO                  | Name&nbsp;of&nbsp;the&nbsp;module&nbsp;\|&nbsp;**\_\_filename**           |
+| **dir**          | string                                         | process.cwd()        | Module&nbsp;directory&nbsp;\|&nbsp;**\_\_dirname**                        |
+| **npmIsolation** | boolean                                        | false                | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                             |
+| **access**       | [Access](./types/options.d.ts#L22)             | {}                   | Isolation&nbsp;restrictions, see [Access API](#reader-api)                |
+| **prepare**      | boolean                                        | false                | Reader&nbsp;would'nt&nbsp;execute script for you                          |
+| **depth**        | boolean\|number                                | true                 | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                |
+| **script**       | [ScriptOptions](./types/options.d.ts#L26)      | {}                   | Configuration&nbsp;for VM.Script initialization                           |
+| **run**          | [RunningCodeOptions](./types/options.d.ts#L25) | {timeout:&nbsp;1000} | Configuration&nbsp;for VM.Script execution                                |
 
 </div>
 
