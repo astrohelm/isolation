@@ -1,21 +1,36 @@
-<h1 align="center">Isolation</h1>
+<h1 align="center">
+
+**Isolation**
+
+</h1>
 
 **Why should i use it ?** How often do you see libraries which mutates global variables Or how often
 do you check libraries actions ? Library provides script isolation in custom contexts to solve this
 issues. Also, isolation prevents global scope and prototypes pollution.
 
+> [!TIP]
+>
+> ## **Possible usecase**
+>
 > May be useful as routing loader, if some loaded route makes an error while runtime, you may
-> recreate it - to prevent memory leaks.
+> recreate it - to prevent memory leaks. Another worlds, with this library you can create
+> multi-tenant applications;
 
-<h2 align="center">Installation</h2>
+<h2 align="center">
 
-_Warning !_ Required scripts must be commonjs syntax
+**Installation**
+
+</h2>
 
 ```bash
 npm i isolation --save
 ```
 
-<h2 align="center">Basic Usage</h2>
+<h2 align="center">
+
+**Basic Usage**
+
+</h2>
 
 - **Prevent intentionally damage**
 
@@ -24,7 +39,8 @@ npm i isolation --save
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  const routes = Isolation.read('./routes', { access: { sandbox: module => module !== 'fs' } }); // Will throw error because fs doesn't allowed
+  const options = { access: { sandbox: module => module !== 'fs' } };
+  const routes = Isolation.read('./routes', options); // Will throw error because fs doesn't allowed
   ```
 
   ```javascript
@@ -49,6 +65,7 @@ npm i isolation --save
   Isolation.read('./routes');
   console.log('All works fine');
   console('Here it not works'); // Will throw error
+  String.prototype; // Will be as default
   ```
 
   ```javascript
@@ -62,34 +79,28 @@ npm i isolation --save
   var console = msg => process.stdout.write(msg); // Someone just want different implementation for console
   global.console = console;
   console('Here it works fine');
+  String.prototype = {}; // Or just mutating prototypes
   ```
 
-<h2 align="center">Details</h2>
+<h2 id="module-types" align="center">
 
-### Access control
+**Modules / Script syntax**
 
-You may control access to some modules or paths of your application
+</h2>
 
-```js
-const options = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
-Isolation.execute('module.exports = require("fs")', options);
-Isolation.read('./path/to/script.js', options);
-// Or
-const options2 = {
-  access: {
-    reader: path => true, // Reader control
-    realm: module => {}, // Realm require control
-  },
-};
-```
+> [!CAUTION]
+>
+> You can run any script from string, just like eval, but in custom VM container. But you
+> **shouldn't use** it for unknown script evaluation, it may create **security issues**.
 
-> If access doesn't provided sandbox submodules would'nt be accessible and reader will read all
-> files in directed repository
+### **Commonjs**
 
-### Common js
+By default Isolation will use Standard Nodejs syntax. With this type of syntax it will provide to
+your realms global variables such as:
 
-Isolation supports only commonjs syntax from <code>v1.1.0</code> That's because currently node.vm
-doesn't support ecmascript syntax
+- **require** function, which is almost same as nodejs require, but with extra cup of isolation;
+- **module** & **exports** variables provided to manipulate with exports between modules;
+- **\_\_filename** & **\_\_dirname** are same as with default nodejs realm;
 
 ```javascript
 const Isolation = require('isolation');
@@ -98,34 +109,54 @@ console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // O
 Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
 ```
 
-> You always should use module.exports to recieve results
+> [!IMPORTANT]
+>
+> You always should use module.exports to export, otherwise you will see undefined as the result of
+> realm execution.
 
-### Context API
+### **ISO**
 
-You can create custom context or use default presets with context api.
+This type of syntax will stand your script alone without any of extra global variables. That means
+that you would not see <code>module</code> or <code>exports</code> in your environment. But your
+context variables will still work well.
 
-> Default contexts are accessible from Isolation.sandbox
-
-```typescript
-import  { Context, CreateContextOptions } from 'node:vm';
-{
-  OPTIONS: CreateContextOptions,
-  EMPTY: Context, // Result of CTX.create(Object.freeze({}))
-  COMMON: Context, // Frozen nodejs internal api
-  NODE: Context, // Frozen nodejs internal api & global variables
-  (ctx: object, preventEscape: boolean): Context
-}
+```javascript
+const Isolation = require('isolation');
+const options = { type: 'iso' };
+console.log(new Isolation(`{ field: 'value' };`, options).execute()); // Output: { field: 'value' }
+console.log(Isolation.execute(`(a, b) => a + b;`, options)(2 + 2)); // Output: 4
+Isolation.execute(`async (a, b) => a + b;`, options)(2 + 2).then(console.log); // Output: 4
 ```
+
+> [!IMPORTANT]
+>
+> In this mode, your realms will export result of the last expression, that means that you should
+> put a reference to your variable or expression at the end of the file / row;
+
+### **ESM**
+
+Isolation does'nt support esm syntax yet. That's because currently <code>node.vm</code> ESM modules
+are experimental.
+
+<h2 id="context-api" align="center">
+
+**Context API**
+
+</h2>
+
+You can create custom context or use default presets with **context api**. This will allow you to
+provide your custom variables to the context without requiring any module.
+
+### **Context example**
 
 ```javascript
 const { sandbox, execute } = require('isolation');
 const custom = sandbox({ console });
-execute(`console.log(123);`, { ctx: custom }); // Output: 123
-execute(`console.log(123);`); // No output, because different stdout stream
+execute(`console.log(123);`, { ctx: custom }); // STD Output: 123
+execute(`console.log(123);`); // No STD output, because different stdout stream
 ```
 
-This will allow you to provide your custom variables to the context without requiring any module and
-with link safety. Also its allow you to change program behavior with something like:
+Also its allow you to change program behavior with something like:
 
 ```js
 const ctx = Isolation.sandbox({ a: 1000, b: 10 });
@@ -133,20 +164,34 @@ const realm = new Isolation(`module.exports = a - b`, { ctx });
 realm.execute(); // Output: 990
 realm.execute({ ...ctx, a: 0 }); // Output: -10
 realm.execute({ ...ctx, b: 7 }); // Output: 993
-// Or with direct way
-Isolation.execute(`module.exports = a - b`, { ctx }); // 900
-Isolation.execute(`module.exports = a - b`, {}, { ...ctx, a: 0 }); // -10
-Isolation.execute(`module.exports = a - b`, {}, { ...ctx, b: 7 }); // 993
 ```
 
-### Reader API
+> [!TIP]
+>
+> Remember to reuse your contexts. This will encrease performance of your application. To help you
+> with this we have default contexts:
 
-Reader allow you to run scripts from files
+### **Default contexts**
+
+Default contexts are accessible from Isolation.sandbox, there you can find:
+
+- Isolation.sandbox.**EMPTY**, that just empty context
+- Isolation.sandbox.**COMMON**, timers, buffer, fetch etc...
+- Isolation.sandbox.**NODE**, global, console, process & **COMMON** context You should not use
+  **NODE**, it may create security issues, becouse of sandbox escaping.
+
+<h2 id="reader-api" align="center">
+
+**Reader API**
+
+</h2>
+
+Reader allow you to run scripts from files and extends possible provided options with:
+
+- Option <code>prepare:boolean</code> reader will return non-executed scripts, **default false**
+- Option <code>depth:number|boolean</code> nested directories restrictions, **default true**
 
 - <code>read</code> Allow you to read source codes from files and directories
-
-  - Option <code>prepare</code> allow you to execute script later
-  - Option <code>depth</code> allow you to pull scripts from nested directories
 
   ```javascript
   const Realm = require('isolation');
@@ -181,55 +226,74 @@ Reader allow you to run scripts from files
   Isolation.read.dir('./path/to', { depth: false }).then(console.log); // Output: { script: any }
   ```
 
-<h2>Other useful information</h2>
+<h2 id="access-control" align="center">
 
-- **Script from string** You can run any script from string, just like eval, but in custom VM
-  container. But you **shouldn't use** it for unknown script evaluation, it may create **security
-  issues**.
+**Access control**
 
-  > For running expressions you should use ISO Mode
+</h2>
 
-  ```js
-  const Isolation = require('isolation');
-  console.log(Isolation.execute(`(a, b) => a + b;`, { type: 'iso' })(2 + 2)); // Output: 4
-  Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
-  ```
+You may control access to some modules or paths of your application
 
-- **Library substitution** For example it can be use to provide custom fs module, with your strict
-  methods
+> [!NOTE] If access doesn't provided realm submodules would'nt be accessible, also reader will read
+> all files in directed repository
 
-  ```js
-  const Isolation = require('isolation');
-  const src = `
-    const fs = require('fs');
-    module.exports = fs.readFile('Isolation.js');
-  `;
-  const result = Isolation.execute(src, {
-    access: {
-      realm: module => ({ fs: { readFile: (filename) => filename + ' Works !' } })[module];
-    },
-  });
-  console.log(result); // Output: Isolation.js Works !
-  ```
+```js
+const options = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
+Isolation.execute('module.exports = require("fs")', options);
+Isolation.read('./path/to/script.js', options);
+// Or
+const options2 = {
+  access: {
+    reader: path => true, // Reader control
+    realm: module => {}, // Realm require control
+  },
+};
+```
 
-### Script Options
+### **Library substitution**
 
-- **type**: <code>iso/cjs</code> Type of script wrapping, by default <code>cjs</code>, in iso mode
-  script would not inject global variables such as require, **filename**, **dirname**, **module**
-  and **exports**, also it will export result of the last expression
-- **filename**: Stands for the name of the module, by default it's empty string (\_\_filename)
-- **dir**: Stands for the name of the module directory (realm require startpoint & \_\_dirname), by
-  default <code>process.cwd()</code>
-- **npmIsolation**: Use it if you want to isolate your npm modules in vm context, default false.
-  (May require to provide dependencies)
-- **ctx**: See Context API
-- **access**: See Access API
-- **prepare**: Works only with read API. Functions, where this option provided, will return
-  intermediate object and you will be able to finish execution later. Script has alternative to this
-  option - <code>prepare method</code>.
-- **depth**: Works only with read API. Restricts dir reading depth. By default: true, means
-  unlimited depth.
-- **script** & **run** This options allow you to configure VM.Script initialization & execution.
+You can replace result of require for specific libraries with anything what you want;
+
+```js
+const Isolation = require('isolation');
+const src = `
+  const fs = require('fs');
+  module.exports = fs.readFile('Isolation.js');
+`;
+
+const sub = name => {
+  if (name !== 'fs') return true;
+  return {
+    readFile: filename => filename + ' Works !',
+  };
+};
+
+const result = Isolation.execute(src, { access: { realm: sub } });
+console.log(result); // Output: Isolation.js Works !
+```
+
+<h2 id="script-options" align="center">
+
+**Possible script options**
+
+</h2>
+
+<div align="center">
+
+| Option           | Possible                               | Default                                                 | Description                                                |
+| ---------------- | -------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| **type**         | iso\|cjs                               | cjs                                                     | Type of script handling, see [syntax types](#module-types) |
+| **ctx**          | object                                 | {}                                                      | Realm context, see [Context API](#context-api)             |
+| **filename**     | string                                 | ISO                                                     | Stands for the name of the module (\_\_filename)           |
+| **dir**          | string                                 | process.cwd()                                           | Stands for the name of the module (\_\dirname)             |
+| **npmIsolation** | boolean                                | false                                                   | Use it if you want to isolate your npm modules             |
+| **access**       | <code>{ realm: FN, reader: FN }</code> | <code>{ realm: () => false, reader: () => true }</code> | Isolation restrictions, see [Access API](#reader-api)      |
+| **prepare**      | boolean                                | false                                                   | Reader would'nt execute script for you                     |
+| **depth**        | boolean\|number                        | true                                                    | Restricts dir reading depth                                |
+| **script**       | vm.ScriptOptions                       | <code>{ filename, lineOffset }</code>                   | Configuration for VM.Script initialization                 |
+| **run**          | vm.RunningCodeOptions                  | <code>{ timeout: 1000 }</code>                          | Configuration for VM.Script execution                      |
+
+</div>
 
 <h2 align="center">Copyright & contributors</h2>
 

@@ -2,6 +2,13 @@
 
 ## [Unreleased][unreleased]
 
+## [1.9.0][] - 2023-12-11
+
+- Symbolic properties
+- Now it is more configurable from outside
+- Performance improvements
+- Readme improvements
+
 ## [1.8.0][] - 2023-12-08
 
 - Return of type system
@@ -106,7 +113,8 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v1.8.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/astrohelm/isolation/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/astrohelm/isolation/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/astrohelm/isolation/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/astrohelm/isolation/compare/v1.5.0...v1.6.0
