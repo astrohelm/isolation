@@ -1,10 +1,10 @@
 {
   "license": "MIT",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "commonjs",
   "name": "isolation",
   "homepage": "https://astrohelm.ru",
-  "description": "How often do you see libraries which mutates global variables Or how often do you check libraries actions ? This lib provides script isolation in custom contexts to solve this issues.",
+  "description": "How often do you see libraries which mutates global variables Or how often do you check libraries actions ? This library provides script isolation in custom contexts to solve this issues.",
   "author": "Alexander Ivanov <sashapop101@gmail.com>",
   "keywords": [
     "v8",

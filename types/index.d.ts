@@ -27,6 +27,11 @@ export = class Script {
    * @description Equivalent to __dirname
    */
   dir: string;
+  /**
+   * @description Typeof script wrapping process, by default cjs
+   * @warning In ISO mode you will stand alone without global variables such as __dirname, __filename, require, exports and module.
+   */
+  type: 'cjs' | 'iso';
 
   /**
    * @example <caption>Read Api</caption>
@@ -43,6 +48,15 @@ export = class Script {
    * console.log(Isolation.read(`({ field: 'value' });`, { type: 'iso' }).execute()); // Output: { field: 'value' }
    */
   static prepare: (src: string, options?: TOptions) => Script;
+
+  /**
+   * @example <caption>Symbols for hidden properties</caption>
+   * @warning You should know what are you doing
+   * const Isolation = require('isolation');
+   * const script = new Isolation('a + b', { type: 'iso' });
+   * const ctx = script[Isolation.symbols.kContext]; // Access to script context & etc.
+   */
+  static symbols: { kContext: symbol; kRequire: symbol; kOptions: symbol; kMachine: symbol };
 
   /**
    * @example <caption>Skip init process</caption>

@@ -1,3 +1,5 @@
+import type { RunningCodeOptions, ScriptOptions } from 'node:vm';
+
 type TAccess = (path: string, type?: 'reader' | 'realm') => boolean | object;
 type TSpecific = <RES>(path: string) => RES;
 
