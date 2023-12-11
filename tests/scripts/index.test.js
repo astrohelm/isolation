@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
-const { read, sandbox } = require('../..');
+const { read, contextify } = require('../..');
 
 const target = name => path.join(__dirname, 'examples', name);
 
@@ -26,7 +26,7 @@ test('[CORE] Simple (from non extension file)', async () => {
 });
 
 test('[CORE] Complex.js', async () => {
-  const ctx = sandbox({ setTimeout });
+  const ctx = contextify({ setTimeout });
   const options = { filename: 'CUSTOM FILE NAME', ctx };
   const ms = await read.file(target('complex.js'), options);
 

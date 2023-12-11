@@ -1,25 +1,62 @@
 import type { RunningCodeOptions, ScriptOptions } from 'node:vm';
 
-type TAccess = (path: string, type?: 'reader' | 'realm') => boolean | object;
-type TSpecific = <RES>(path: string) => RES;
+type TAccess = (type?: 'reader' | 'realm', path: string) => boolean | object;
 
 /**
  * @example
  * ({
- *    dir: '/tests', //? __dirname variable, realm require startpoint
- *    filename: 'index.js', //? __filename variable
- *    npmIsolation: true, //? Intenal dependencies will be loaded with isolation, default is false
+ *    dir: '/tests',
+ *    filename: 'index.js',
+ *    npmIsolation: true,
  *    ctx: { console, A: 5, B: 'Hello world' }, //? Inject global variables, default {}
  *    access: (name, type) => true, //? Controll access to Realm submodules or reader API
  * })
  */
 export interface TOptions {
-  dir?: string; // proccess.cwd()
-  filename?: string; // ISO
-  npmIsolation?: boolean; // false;
+  /**
+   * @default process.cwd()
+   * @description __dirname, used for require startpoint
+   * @warning Provided to realm only with CJS type
+   */
+  dir?: string;
+  /**
+   * @default 'ISO'
+   * @description __filename
+   * @warning Provided to realm only with CJS type
+   */
+  filename?: string;
+  /**
+   * @default false
+   * @description Runs npm modules in the same realm as current
+   * @warning Work only in CJS realms
+   */
+  npmIsolation?: boolean;
+  /**
+   * @default 'cjs'
+   * @description Type of realm
+   * @warning In ISO mode realm Isolation does not inject global variables such as require, module, exports, __filename and __dirname
+   * @example
+   * // CJS realm
+   * new Isolation('module.exports = (a,b) => a + b;');
+   * // ISO realm
+   * new Isolation('(a,b) => a + b;', { type: 'iso' })
+   */
   type?: 'cjs' | 'iso'; // cjs
 
-  access?: { sandbox?: TSpecific<boolean | object>; internal?: TSpecific<boolean> } | TAccess;
+  /**
+   * @default type => type === 'realm' ? false : true;
+   * @description Isolation access control and stabbing
+   */
+  // prettier-ignore
+  access?: TAccess | {
+    realm?: (path: string) => boolean | object;
+    reader?: (path: string) => boolean;
+  };
+
+  /**
+   * @default Isolation.contextify.EMPTY
+   * @description Realm context
+   */
   ctx?: Context | { [key: string]: unknown };
 
   run?: RunningCodeOptions;
@@ -29,17 +66,35 @@ export interface TOptions {
 /**
  * @example
  * ({
- *    type: 'cjs', //? cjs mode injects global variables, in iso mode script will export result of last expression
- *    dir: '/tests', //? __dirname variable, internal require startpoint
- *    filename: 'index.js', //? __filename variable
- *    npmIsolation: true, //? Intenal dependencies will be loaded with isolation, by default false
- *    ctx: { console, A: 5, B: 'Hello world' }, //? Inject global variables, default {}
- *    access: (name, type) => true, //? Controll access to Realm submodules or reader API
- *    prepare: true, //?  If true, reader will return unexecuted script, by default false
- *    depth: 5, //? If true, reader will go through all depth folders, by default true
+ *    type: 'cjs',
+ *    dir: '/tests',
+ *    filename: 'index.js',
+ *    npmIsolation: true,
+ *    ctx: { console, A: 5, B: 'Hello world' },
+ *    access: (name, type) => true,
+ *    prepare: true,
+ *    depth: 5,
  * })
  */
-export interface TOptionsReader {
-  prepare?: boolean; // By default false
-  depth?: boolean | number; // By default true
+export interface TOptionsReader extends TOptions {
+  /**
+   * @default false
+   * @description If true, Reader will return unexecuted script
+   */
+  prepare?: boolean;
+  /**
+   * @default true
+   * @description If true, Reader will go through all depth folder
+   */
+  depth?: boolean | number;
+  /**
+   * @default false
+   * @description If true, all deep dependencies names will appear in the root
+   * @example
+   * // option: false
+   * ({ myscript: Function, test: 123, depthFolder: { myscript: 'hello world' }  })
+   * // option: true
+   * ({ myscript: 'hello world', test: 123 })
+   */
+  flat?: boolean;
 }

@@ -1,10 +1,10 @@
 /**
- * @example <caption>Sandbox usage example</caption>
+ * @example <caption>Context usage example</caption>
  * const realm = new Isolation('a - b', { type: 'iso' });
  * realm.execute({ a: 1000, b: 10 }); // Output: 990
  * realm.execute({ a: 1000, b: 20 }); // Output: 980
  */
-export type TSandbox = {
+export type TContextify = {
   /**
    * @example <caption>This will affect on future contexts</caption>
    * // Default config:
@@ -32,7 +32,7 @@ export type TSandbox = {
 
   /**
    * @example <caption>You can create custom context</caption>
-   * const ctx = Isolation.sandbox({ console, a: 1000, b: 10  });
+   * const ctx = Isolation.contextify({ console, a: 1000, b: 10  });
    **/
   (ctx?: Context | Object, preventEscape?: boolean): Context;
 };

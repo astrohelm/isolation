@@ -1,7 +1,7 @@
 import type { Context, Script as TScript, ScriptOptions, BaseOptions } from 'node:vm';
 import type { RunningCodeOptions, CreateContextOptions } from 'node:vm';
 import type { TOptions, TOptionsReader } from './options';
-import type { TSandbox } from './context';
+import type { TContextify } from './context';
 
 type TMap<value> = { [key: string]: value };
 
@@ -72,13 +72,13 @@ export = class Script {
   static createRequire: (dir: string, options?: TOptions) => NodeRequire;
 
   /**
-   * @example <caption>Custom sandboxes</caption>
+   * @example <caption>Custom contexts</caption>
    * const ctx = { a: 1000, b: 10 }
    * const realm = new Isolation('a - b', { ctx, type: 'iso' });
    * realm.execute(); // Output: 990
    * realm.execute({ ...ctx, b: 7  }); // Output: 993
    */
-  static sandbox: TSandbox;
+  static contextify: TContextify;
 
   /**
    * @example <caption>Constructor initialization</caption>
