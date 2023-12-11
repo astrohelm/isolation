@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, read } = Script;
+const { contextify, read } = Script;
 const target = name => path.join(__dirname, name);
 
 test('[CORE] Script executor', async () => {
@@ -30,7 +30,7 @@ test('[CORE] Npm isolation check', async () => {
   const script = Script.prepare(`module.exports = require('chalk')`, {
     access,
     npmIsolation: true,
-    ctx: sandbox.NODE,
+    ctx: contextify.NODE,
   });
   assert.strictEqual(typeof script.execute(), 'function');
 });
@@ -80,7 +80,7 @@ test('[READER] Folder loader', async () => {
 });
 
 test('[READER] Universal loader', async () => {
-  const access = path => !path.endsWith('.json');
+  const access = (_, path) => !path.endsWith('.json');
   const scripts = await read(target('examples'), { access });
   const { deep, simple } = scripts;
   const { arrow } = deep;
@@ -100,7 +100,7 @@ test('[READER] Universal loader', async () => {
 });
 
 test('[READER] Deep option', async () => {
-  const access = path => !path.endsWith('.json');
+  const access = (_, path) => !path.endsWith('.json');
   const scripts = await read(target('examples'), { access, depth: 1 });
   const { simple } = scripts;
 
@@ -113,8 +113,18 @@ test('[READER] Deep option', async () => {
   assert.strictEqual(simple.sub(2, 3), -1);
 });
 
+test('[READER] Flat option', async () => {
+  const access = (_, path) => !path.endsWith('.json');
+  const scripts = await read(target('examples'), { access, flat: true });
+
+  assert.strictEqual(typeof scripts, 'object');
+  console.log(scripts);
+  assert.strictEqual(Object.keys(scripts).length, 2);
+  assert.deepStrictEqual(Object.keys(scripts), ['simple', 'arrow']);
+});
+
 test('[READER] prepare option', async () => {
-  const access = path => !path.endsWith('.json');
+  const access = (_, path) => !path.endsWith('.json');
   const scripts = await read.dir(target('examples'), { prepare: true, access });
   const { deep } = scripts;
   let { simple } = scripts;
@@ -146,13 +156,13 @@ test('[READER] prepare option', async () => {
 });
 
 test('[CTX] Default', async () => {
-  const ctx = sandbox();
+  const ctx = contextify();
   assert.deepEqual(Object.keys(ctx), []);
   assert.strictEqual(ctx.global, undefined);
 });
 
 test('[CTX] Common', async () => {
-  const ctx = sandbox(sandbox.NODE);
+  const ctx = contextify(contextify.NODE);
   assert.strictEqual(typeof ctx, 'object');
   assert.strictEqual(ctx.console, console);
   assert.strictEqual(ctx.global, global);
@@ -161,13 +171,13 @@ test('[CTX] Common', async () => {
 test('[CTX] Custom', async () => {
   const context = { field: 'value' };
   context.global = context;
-  const ctx = sandbox(Object.freeze(context));
+  const ctx = contextify(Object.freeze(context));
   assert.strictEqual(ctx.field, 'value');
   assert.deepEqual(Object.keys(ctx), ['field', 'global']);
   assert.strictEqual(ctx.global, context);
 });
 
-test('[SANDBOX] reader', async () => {
+test('[REALM] reader', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);
@@ -176,7 +186,7 @@ test('[SANDBOX] reader', async () => {
   }
 });
 
-test('[SANDBOX] Non-existent', async () => {
+test('[REALM] Non-existent', async () => {
   try {
     const src = `const notExist = require('nothing');`;
     const result = Script.execute(src);

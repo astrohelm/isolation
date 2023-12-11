@@ -39,7 +39,7 @@ npm i isolation --save
   ```javascript
   // index.js
   const Isolation = require('isolation');
-  const options = { access: { sandbox: module => module !== 'fs' } };
+  const options = { access: { realm: module => module !== 'fs' } };
   const routes = Isolation.read('./routes', options); // ⚠️ Will throw error because fs doesn't allowed
   ```
 
@@ -84,7 +84,7 @@ npm i isolation --save
 
 <h2 id="module-types" align="center">
 
-**Modules / Script syntax**
+**Module types / Script syntax**
 
 </h2>
 
@@ -102,6 +102,11 @@ your realms global variables such as:
 - **module** & **exports** variables provided to manipulate with exports between modules;
 - **\_\_filename** & **\_\_dirname** are same as with default nodejs realm;
 
+> [!IMPORTANT]
+>
+> You always should use module.exports to export, otherwise you will see undefined as the result of
+> realm execution.
+
 ```javascript
 const Isolation = require('isolation');
 console.log(new Isolation(`module.exports = { field: 'value' };`).execute()); // Output: { field: 'value' }
@@ -109,16 +114,16 @@ console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // O
 Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
 ```
 
-> [!IMPORTANT]
->
-> You always should use module.exports to export, otherwise you will see undefined as the result of
-> realm execution.
-
 ### **ISO**
 
 This type of syntax will stand your script alone without any of extra global variables. That means
 that you would not see <code>module</code> or <code>exports</code> in your environment. But your
 context variables will still work well.
+
+> [!IMPORTANT]
+>
+> In this mode, your realms will export result of the last expression, that means that you should
+> put a reference to your variable or expression at the end of the file / row;
 
 ```javascript
 const Isolation = require('isolation');
@@ -127,11 +132,6 @@ console.log(new Isolation(`{ field: 'value' };`, options).execute()); // Output:
 console.log(Isolation.execute(`(a, b) => a + b;`, options)(2 + 2)); // Output: 4
 Isolation.execute(`async (a, b) => a + b;`, options)(2 + 2).then(console.log); // Output: 4
 ```
-
-> [!IMPORTANT]
->
-> In this mode, your realms will export result of the last expression, that means that you should
-> put a reference to your variable or expression at the end of the file / row;
 
 ### **ESM**
 
@@ -147,11 +147,16 @@ are experimental.
 You can create custom context or use default presets with **context api**. This will allow you to
 provide your custom variables to the context without requiring any module.
 
+> [!TIP]
+>
+> Remember to reuse your contexts. This will encrease performance of your application. To help you
+> with this we have default contexts:
+
 ### **Context example**
 
 ```javascript
-const { sandbox, execute } = require('isolation');
-const custom = sandbox({ console });
+const { contextify, execute } = require('isolation');
+const custom = contextify({ console }); // ⚠️ Object will be mutated
 execute(`console.log(123);`, { ctx: custom }); // STD Output: 123
 execute(`console.log(123);`); // No STD output, because different stdout stream
 ```
@@ -159,26 +164,22 @@ execute(`console.log(123);`); // No STD output, because different stdout stream
 Also its allow you to change program behavior with something like:
 
 ```js
-const ctx = Isolation.sandbox({ a: 1000, b: 10 });
+const ctx = Isolation.contextify({ a: 1000, b: 10 });
 const realm = new Isolation(`module.exports = a - b`, { ctx });
 realm.execute(); // Output: 990
 realm.execute({ ...ctx, a: 0 }); // Output: -10
 realm.execute({ ...ctx, b: 7 }); // Output: 993
 ```
 
-> [!TIP]
->
-> Remember to reuse your contexts. This will encrease performance of your application. To help you
-> with this we have default contexts:
-
 ### **Default contexts**
 
-Default contexts are accessible from Isolation.sandbox, there you can find:
+Default contexts are accessible from Isolation.contextify, there you can find:
 
-- Isolation.sandbox.**EMPTY**, that just empty context
-- Isolation.sandbox.**COMMON**, timers, buffer, fetch etc...
-- Isolation.sandbox.**NODE**, global, console, process & **COMMON** context You should not use
-  **NODE**, it may create security issues, becouse of sandbox escaping.
+- Isolation.contextify.**EMPTY**, that just empty context
+- Isolation.contextify.**COMMON**, timers, buffer, fetch etc...
+- Isolation.contextify.**NODE**, global, console, process & **COMMON** context You should'nt use
+  **NODE** context, it may create security issues, otherwise it may road to possible context
+  escaping.
 
 <h2 id="reader-api" align="center">
 
@@ -190,14 +191,15 @@ Reader allow you to run scripts from files and extends possible provided options
 
 - Option <code>prepare:boolean</code> reader will return non-executed scripts, **default false**
 - Option <code>depth:number|boolean</code> nested directories restrictions, **default true**
+- Option <code>flat:boolean</code> reader will flat nested scripts, **default false**
 
 - <code>read</code> Allow you to read source codes from files and directories
 
   ```javascript
-  const Realm = require('isolation');
-  Realm.read('./path/to/script.js').then(console.log); // Output: result of script execution
-  Realm.read('./path/to').then(console.log); // Output: { script: any }
-  Realm.read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
+  const Isolation = require('isolation');
+  Isolation.read('./path/to/script.js').then(console.log); // Output: result of script execution
+  Isolation.read('./path/to').then(console.log); // Output: { script: any }
+  Isolation.read('./path/to', { prepare: true }).then(console.log); // Output: { script: Script {} }
   ```
 
   By default reader works with nested directories, to disable this behavior you can do:
@@ -232,10 +234,10 @@ Reader allow you to run scripts from files and extends possible provided options
 
 </h2>
 
-You may control access to some modules or paths of your application
+You may control access over realm submodules and reader api;
 
-> [!NOTE] If access doesn't provided realm submodules would'nt be accessible, also reader will read
-> all files in directed repository
+> [!NOTE] If access doesn't provided realm submodules would'nt be accessible and reader will read
+> all files in directed repository.
 
 ```js
 const options = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
@@ -244,8 +246,8 @@ Isolation.read('./path/to/script.js', options);
 // Or
 const options2 = {
   access: {
-    reader: path => true, // Reader control
-    realm: module => {}, // Realm require control
+    reader: path => true, // Directory reader
+    realm: module => {}, //  Realm submodules
   },
 };
 ```
@@ -278,22 +280,19 @@ console.log(result); // Output: Isolation.js Works !
 
 </h2>
 
-<div align="center">
-
-| Option           | Possible                                       | Default              | Description                                                               |
-| ---------------- | ---------------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
-| **type**         | iso\|cjs                                       | cjs                  | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types) |
-| **ctx**          | object                                         | {}                   | Realm&nbsp;context, see [Context API](#context-api)                       |
-| **filename**     | string                                         | ISO                  | Name&nbsp;of&nbsp;the&nbsp;module&nbsp;\|&nbsp;**\_\_filename**           |
-| **dir**          | string                                         | process.cwd()        | Module&nbsp;directory&nbsp;\|&nbsp;**\_\_dirname**                        |
-| **npmIsolation** | boolean                                        | false                | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                             |
-| **access**       | [Access](./types/options.d.ts#L22)             | {}                   | Isolation&nbsp;restrictions, see [Access API](#reader-api)                |
-| **prepare**      | boolean                                        | false                | Reader&nbsp;would'nt&nbsp;execute script for you                          |
-| **depth**        | boolean\|number                                | true                 | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                |
-| **script**       | [ScriptOptions](./types/options.d.ts#L26)      | {}                   | Configuration&nbsp;for VM.Script initialization                           |
-| **run**          | [RunningCodeOptions](./types/options.d.ts#L25) | {timeout:&nbsp;1000} | Configuration&nbsp;for VM.Script execution                                |
-
-</div>
+| Option           | Possible                                       | Default                          | Description                                                                                          |
+| ---------------- | ---------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **type**         | iso&nbsp;\|&nbsp;cjs                           | cjs                              | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types)                            |
+| **ctx**          | object                                         | -                                | Realm&nbsp;context, see [Context API](#context-api)                                                  |
+| **filename**     | string                                         | ISO                              | Name&nbsp;of&nbsp;the&nbsp;module&nbsp;, also it is global variable **\_\_filename** for root realm  |
+| **dir**          | string                                         | process.cwd()                    | Module&nbsp;directory&nbsp;, also it is global varibale **\_\_dirname** and realm require startpoint |
+| **npmIsolation** | boolean                                        | false                            | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                                                        |
+| **access**       | [Access](./types/options.d.ts#L51)             | -                                | Isolation&nbsp;restrictions, see [Access API](#reader-api)                                           |
+| **prepare**      | boolean                                        | false                            | Reader&nbsp;would'nt&nbsp;execute script for you                                                     |
+| **flat**         | boolean                                        | false                            | Reader&nbsp;will&nbsp;flat&nbsp;nested&nbsp;scripts                                                  |
+| **depth**        | boolean&nbsp;\|&nbsp;number                    | true                             | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                                           |
+| **script**       | [ScriptOptions](./types/options.d.ts#L63)      | -                                | Configuration&nbsp;for VM.Script initialization                                                      |
+| **run**          | [RunningCodeOptions](./types/options.d.ts#L62) | {&nbsp;timeout:&nbsp;1000&nbsp;} | Configuration&nbsp;for VM.Script execution                                                           |
 
 <h2 align="center">Copyright & contributors</h2>
 

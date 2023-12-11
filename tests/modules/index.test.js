@@ -4,23 +4,23 @@ const test = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const Script = require('../..');
-const { sandbox, read } = Script;
+const { contextify, read } = Script;
 const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
-test('[SANDBOX] For node internal module', async () => {
+test('[REALM] For node internal module', async () => {
   const context = {};
   context.global = context;
   const src = `module.exports = { fs: require('fs') };`;
-  const ctx = sandbox(Object.freeze(context));
-  exec(src, { ctx, access: module => module === 'fs' });
+  const ctx = contextify(Object.freeze(context));
+  exec(src, { ctx, access: (_, module) => module === 'fs' });
 });
 
-test('[SANDBOX] non-existent but granted', async () => {
+test('[REALM] non-existent but granted', async () => {
   try {
     const ms = exec(`module.exports = require('astroctx');`, {
-      access: module => module === 'astroctx',
+      access: (_, module) => module === 'astroctx',
     });
     assert.strictEqual(ms, undefined);
   } catch (err) {
@@ -28,7 +28,7 @@ test('[SANDBOX] non-existent but granted', async () => {
   }
 });
 
-test('[SANDBOX] Stub', async () => {
+test('[REALM] Stub', async () => {
   const src = `
     const fs = require('fs');
     module.exports = {
@@ -42,14 +42,10 @@ test('[SANDBOX] Stub', async () => {
   const ms = exec(src, {
     access: {
       realm: module => {
-        if (module === 'fs') {
-          return {
-            readFile(filename, callback) {
-              callback(null, 'stub-content');
-            },
-          };
-        }
-        return null;
+        if (module !== 'fs') return true;
+        return {
+          readFile: (filename, callback) => callback(null, 'stub-content'),
+        };
       },
     },
   });
@@ -57,14 +53,14 @@ test('[SANDBOX] Stub', async () => {
   assert.strictEqual(res, 'stub-content');
 });
 
-test('[SANDBOX] Nested', async () => {
+test('[REALM] Nested', async () => {
   const context = { console };
-  context.global = sandbox;
+  context.global = contextify;
   const src = `module.exports = require('./module.cjs');`;
   const ms = exec(src, {
-    ctx: sandbox(Object.freeze(context)),
+    ctx: contextify(Object.freeze(context)),
     dir: path.join(__dirname, 'examples'),
-    access: filepath => {
+    access: (_, filepath) => {
       const available = {
         [path.join(__dirname, 'examples', 'module.cjs')]: true,
         [path.join(__dirname, 'examples', 'module.nested.js')]: true,
@@ -76,21 +72,21 @@ test('[SANDBOX] Nested', async () => {
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[SANDBOX] Access with reader', async () => {
+test('[REALM] Access with reader', async () => {
   const ms = await read.file(target('module.cjs'), {
     dir: path.join(__dirname, 'examples'),
-    access: filepath => filepath === path.join(__dirname, 'examples', 'module.nested.js'),
+    access: (_, filepath) => filepath === path.join(__dirname, 'examples', 'module.nested.js'),
   });
   assert.strictEqual(ms.value, 1);
   assert.strictEqual(ms.nested.value, 2);
 });
 
-test('[SANDBOX] Nested not permitted', async () => {
+test('[REALM] Nested not permitted', async () => {
   try {
     const src = `module.exports = require('./module.cjs');`;
     exec(src, {
       dir: path.join(__dirname, 'examples'),
-      access: filepath => filepath === path.join(__dirname, 'examples', './module.cjs'),
+      access: (_, filepath) => filepath === path.join(__dirname, 'examples', './module.cjs'),
     });
     assert.fail(new Error('Should not be loaded.'));
   } catch (err) {
@@ -98,10 +94,10 @@ test('[SANDBOX] Nested not permitted', async () => {
   }
 });
 
-test('[SANDBOX] nested npm', async () => {
+test('[REALM] nested npm', async () => {
   const src = `module.exports = require('node:test');`;
   const ms = exec(src, {
-    access: module => module === 'node:test',
+    access: (_, module) => module === 'node:test',
   });
   assert.strictEqual(typeof ms, 'function');
 });
