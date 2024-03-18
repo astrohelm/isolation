@@ -9,6 +9,14 @@ const exec = Script.execute;
 
 const target = name => path.join(__dirname, 'examples', name);
 
+test('[CORE] Realm execution timeout', async () => {
+  const src = `Promise.resolve().then(() => { while(1); });`;
+  try {
+    Script.execute(src, { run: { timeout: 1_000 } }, Script.contextify({}, true));
+    assert.fail('Should fail by timeout');
+  } catch (err) {}
+});
+
 test('[CORE] Eval error ', async () => {
   try {
     exec(`module.exports = eval('100 * 2');`);
@@ -54,7 +62,6 @@ test('[CORE] Error.reference.js', async () => {
 
     assert.fail(new Error('Should throw an error.'));
   } catch (err) {
-    console.log(err);
     assert.strictEqual(err.constructor.name, 'ReferenceError');
   }
 });

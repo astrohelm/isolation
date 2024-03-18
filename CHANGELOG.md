@@ -2,10 +2,12 @@
 
 ## [Unreleased][unreleased]
 
-## [2.1.0][] - 2024-13-01
+## [2.1.0][] - 2024-01-13 / 2024-03-18
 
 - Updated packages
 - Grammar fixes
+- Contextify micro task mode fixed
+- New timeout test case
 
 ## [2.0.0][] - 2023-12-12
 
