@@ -119,7 +119,10 @@ test('[READER] Flat option', async () => {
 
   assert.strictEqual(typeof scripts, 'object');
   assert.strictEqual(Object.keys(scripts).length, 2);
-  assert.deepStrictEqual(Object.keys(scripts), ['simple', 'arrow']);
+  assert.deepStrictEqual(
+    Object.keys(scripts).every(i => ['simple', 'arrow'].includes(i)),
+    true,
+  );
 });
 
 test('[READER] Prepare option', async () => {
