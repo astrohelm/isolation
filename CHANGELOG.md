@@ -2,9 +2,16 @@
 
 ## [Unreleased][unreleased]
 
+## [2.1.0][] - 2024-01-13 / 2024-03-18
+
+- Updated packages
+- Grammar fixes
+- Contextify micro task mode fixed
+- New timeout test case
+
 ## [2.0.0][] - 2023-12-12
 
-- Majure release
+- Major release
 - Stable API
 - Documentation enhancement
 - Renamed access property for realm
@@ -62,7 +69,7 @@
 ## [1.3.0][] - 2023-10-26
 
 - Renamed from isolation -> isolation
-- Inhanced documentation
+- Enhanced documentation
 
 ## [1.2.0][] - 2023-10-25
 
@@ -86,17 +93,17 @@
      isolation.require.script('./my-path/to/script.js');
      isolation.require.dir('./my-path/to');
      ```
-  2. New access controll feature, see access updates
+  2. New access control feature, see access updates
 - Access updates, now this option work for both sandbox and reader, you need to provide function
   ```js
   const option = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
   isolation.execute('module.exports = require("fs")');
   isolation.read('./path/to/script.js');
-  // But you still can controll them by each own function
+  // But you still can control them by each own function
   const option = {
     access: {
-      internal: path => true, // Reader controll
-      sandbox: module => {}, // Sandbox require controll
+      internal: path => true, // Reader control
+      sandbox: module => {}, // Sandbox require control
     },
   };
   ```
@@ -127,7 +134,8 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/astrohelm/isolation/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/astrohelm/isolation/compare/v1.0.0...v2.0.0
 [1.9.0]: https://github.com/astrohelm/isolation/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/astrohelm/isolation/compare/v1.7.0...v1.8.0

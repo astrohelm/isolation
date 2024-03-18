@@ -60,7 +60,7 @@ export = class Script {
 
   /**
    * @example <caption>Skip init process</caption>
-   * console.log(Isolation.execute(`module.exporst = (a, b) => a + b;`)(2 + 2)); // Output: 4
+   * console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
    * Isolation.execute(`async (a, b) => a + b;`, { type: 'iso' })(2 + 2).then(console.log); // Output: 4
    */
   static execute: (src: string, options?: TOptions, ctx?: Context) => unknown;

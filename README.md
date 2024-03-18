@@ -10,7 +10,7 @@ issues. Also, isolation prevents global scope and prototypes pollution.
 
 > [!TIP]
 >
-> ## **Possible usecase**
+> ## **Possible use case**
 >
 > May be useful as routing loader, if some loaded route makes an error while runtime, you may
 > recreate it - to prevent memory leaks. Another worlds, with this library you can create
@@ -149,7 +149,7 @@ provide your custom variables to the context without requiring any module.
 
 > [!TIP]
 >
-> Remember to reuse your contexts. This will encrease performance of your application. To help you
+> Remember to reuse your contexts. This will increase performance of your application. To help you
 > with this we have default contexts:
 
 ### **Context example**
@@ -280,19 +280,19 @@ console.log(result); // Output: Isolation.js Works !
 
 </h2>
 
-| Option           | Possible                                       | Default                          | Description                                                                                          |
-| ---------------- | ---------------------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **type**         | iso&nbsp;\|&nbsp;cjs                           | cjs                              | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types)                            |
-| **ctx**          | object                                         | -                                | Realm&nbsp;context, see [Context API](#context-api)                                                  |
-| **filename**     | string                                         | ISO                              | Name&nbsp;of&nbsp;the&nbsp;module&nbsp;, also it is global variable **\_\_filename** for root realm  |
-| **dir**          | string                                         | process.cwd()                    | Module&nbsp;directory&nbsp;, also it is global varibale **\_\_dirname** and realm require startpoint |
-| **npmIsolation** | boolean                                        | false                            | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                                                        |
-| **access**       | [Access](./types/options.d.ts#L51)             | -                                | Isolation&nbsp;restrictions, see [Access API](#reader-api)                                           |
-| **prepare**      | boolean                                        | false                            | Reader&nbsp;would'nt&nbsp;execute script for you                                                     |
-| **flat**         | boolean                                        | false                            | Reader&nbsp;will&nbsp;flat&nbsp;nested&nbsp;scripts                                                  |
-| **depth**        | boolean&nbsp;\|&nbsp;number                    | true                             | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                                           |
-| **script**       | [ScriptOptions](./types/options.d.ts#L63)      | -                                | Configuration&nbsp;for VM.Script initialization                                                      |
-| **run**          | [RunningCodeOptions](./types/options.d.ts#L62) | {&nbsp;timeout:&nbsp;1000&nbsp;} | Configuration&nbsp;for VM.Script execution                                                           |
+| Option           | Possible                                       | Default                          | Description                                                                                           |
+| ---------------- | ---------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **type**         | iso&nbsp;\|&nbsp;cjs                           | cjs                              | Type&nbsp;of&nbsp;script&nbsp;handling, see [syntax types](#module-types)                             |
+| **ctx**          | object                                         | -                                | Realm&nbsp;context, see [Context API](#context-api)                                                   |
+| **filename**     | string                                         | ISO                              | Name&nbsp;of&nbsp;the&nbsp;module&nbsp;, also it is global variable **\_\_filename** for root realm   |
+| **dir**          | string                                         | process.cwd()                    | Module&nbsp;directory&nbsp;, also it is global variable **\_\_dirname** and realm require start point |
+| **npmIsolation** | boolean                                        | false                            | Controls&nbsp;npm&nbsp;modules&nbsp;isolation                                                         |
+| **access**       | [Access](./types/options.d.ts#L51)             | -                                | Isolation&nbsp;restrictions, see [Access API](#reader-api)                                            |
+| **prepare**      | boolean                                        | false                            | Reader&nbsp;would'nt&nbsp;execute script for you                                                      |
+| **flat**         | boolean                                        | false                            | Reader&nbsp;will&nbsp;flat&nbsp;nested&nbsp;scripts                                                   |
+| **depth**        | boolean&nbsp;\|&nbsp;number                    | true                             | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                                            |
+| **script**       | [ScriptOptions](./types/options.d.ts#L63)      | -                                | Configuration&nbsp;for VM.Script initialization                                                       |
+| **run**          | [RunningCodeOptions](./types/options.d.ts#L62) | {&nbsp;timeout:&nbsp;1000&nbsp;} | Configuration&nbsp;for VM.Script execution                                                            |
 
 <h2 align="center">Copyright & contributors</h2>
 

@@ -118,12 +118,14 @@ test('[READER] Flat option', async () => {
   const scripts = await read(target('examples'), { access, flat: true });
 
   assert.strictEqual(typeof scripts, 'object');
-  console.log(scripts);
   assert.strictEqual(Object.keys(scripts).length, 2);
-  assert.deepStrictEqual(Object.keys(scripts), ['simple', 'arrow']);
+  assert.deepStrictEqual(
+    Object.keys(scripts).every(i => ['simple', 'arrow'].includes(i)),
+    true,
+  );
 });
 
-test('[READER] prepare option', async () => {
+test('[READER] Prepare option', async () => {
   const access = (_, path) => !path.endsWith('.json');
   const scripts = await read.dir(target('examples'), { prepare: true, access });
   const { deep } = scripts;
@@ -177,7 +179,7 @@ test('[CTX] Custom', async () => {
   assert.strictEqual(ctx.global, context);
 });
 
-test('[REALM] reader', async () => {
+test('[REALM] Reader', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);
