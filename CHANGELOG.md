@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+## [2.1.1][] - 2024-03-19
+
+- Eslint bug fix
+- Removed support of Nodejs v19
+- Default export fix
+
 ## [2.1.0][] - 2024-01-13 / 2024-03-18
 
 - Updated packages
