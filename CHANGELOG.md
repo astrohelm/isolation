@@ -2,6 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+## [2.2.0][] - 2024-05-00
+
+- Nix-Shell environment for minimal supported node version
+- Latest globals support (Depends on node version)
+- Documentation update
+- Packages update
+- Grammar fixes
+
 ## [2.1.1][] - 2024-03-19
 
 - Eslint bug fix
@@ -140,7 +148,9 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/astrohelm/isolation/compare/v2.1.1...v2.2.0
+[2.1.1]: https://github.com/astrohelm/isolation/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/astrohelm/isolation/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/astrohelm/isolation/compare/v1.0.0...v2.0.0
 [1.9.0]: https://github.com/astrohelm/isolation/compare/v1.8.0...v1.9.0
