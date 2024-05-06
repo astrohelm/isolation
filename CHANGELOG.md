@@ -9,6 +9,8 @@
 - Documentation update
 - Packages update
 - Grammar fixes
+- Types fixes
+- CI Update
 
 ## [2.1.1][] - 2024-03-19
 
