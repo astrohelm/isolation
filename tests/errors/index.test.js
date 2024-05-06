@@ -14,6 +14,7 @@ test('[CORE] Realm execution timeout', async () => {
   try {
     Script.execute(src, { run: { timeout: 1_000 } }, Script.contextify({}, true));
     assert.fail('Should fail by timeout');
+    // eslint-disable-next-line no-empty
   } catch (err) {}
 });
 
