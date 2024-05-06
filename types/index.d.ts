@@ -67,7 +67,7 @@ export = class Script {
 
   /**
    * @example <caption>Function that creates require function for the realm</caption>
-   * const myModule = Isolation.createRequire('/parent/directory')('./myModule.js);
+   * const myModule = Isolation.createRequire('/parent/directory')('./myModule.js');
    */
   static createRequire: (dir: string, options?: TOptions) => NodeRequire;
 

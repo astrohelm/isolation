@@ -9,13 +9,13 @@ type TAccess = (type?: 'reader' | 'realm', path: string) => boolean | object;
  *    filename: 'index.js',
  *    npmIsolation: true,
  *    ctx: { console, A: 5, B: 'Hello world' }, //? Inject global variables, default {}
- *    access: (name, type) => true, //? Controll access to Realm submodules or reader API
+ *    access: (name, type) => true, //? Control access to Realm submodules or reader API
  * })
  */
 export interface TOptions {
   /**
    * @default process.cwd()
-   * @description __dirname, used for require startpoint
+   * @description __dirname, used for require start point
    * @warning Provided to realm only with CJS type
    */
   dir?: string;
