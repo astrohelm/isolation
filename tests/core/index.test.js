@@ -199,7 +199,7 @@ test('[CTX] Custom', async () => {
   assert.strictEqual(ctx.global, context);
 });
 
-test('[REALM] Reader', async () => {
+test('[REALM] Access denied', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);
@@ -225,3 +225,10 @@ test('[REALM] Non-existent', async () => {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
 });
+
+// test('', () => {
+//   const src = `require('./examples/simple');`;
+//   const ctx = { require };
+//   const result = Script.execute(src, { type: 'iso', ctx });
+//   console.log(result);
+// });

@@ -6,7 +6,7 @@
 
 **Why should i use it ?** How often do you see libraries which mutates global variables Or how often
 do you check libraries actions ? Library provides script isolation in custom contexts to solve this
-issues. Also, isolation prevents global scope and prototypes pollution.
+kind of issues. Also, isolation prevents global scope and prototypes pollution.
 
 > [!TIP]
 >
@@ -37,10 +37,9 @@ npm i isolation --save
   It will stop tricky users code, while you don't allow it.
 
   ```javascript
-  // index.js
-  const Isolation = require('isolation');
-  const options = { access: { realm: module => module !== 'fs' } };
-  const routes = Isolation.read('./routes', options); // ⚠️ Will throw error because fs doesn't allowed
+  // unchecked-dangerous-library index.js
+  const fs = require('fs');
+  fs.rm(process.cwd(), { recursive: true }); // Ha ha, no-code developer
   ```
 
   ```javascript
@@ -50,9 +49,10 @@ npm i isolation --save
   ```
 
   ```javascript
-  // unchecked-dangerous-library index.js
-  const fs = require('fs');
-  fs.rm(process.cwd(), { recursive: true }); // Ha ha, no-code developer
+  // index.js
+  const Isolation = require('isolation');
+  const routes = Isolation.read('./routes');
+  // ⚠️ Will throw an error because fs doesn't allowed
   ```
 
 - **Prevent unintentionally damage**
@@ -60,12 +60,11 @@ npm i isolation --save
   This solves problem where libraries used to mutate global variables.
 
   ```javascript
-  // index.js
-  const Isolation = require('isolation');
-  Isolation.read('./routes');
-  console.log('All works fine');
-  console('Here it not works'); // Will throw error
-  String.prototype; // Will be as default
+  // unchecked-dangerous-library index.js
+  var console = msg => process.stdout.write(msg); // Someone just want different implementation for console
+  global.console = console;
+  console('Here it works fine');
+  String.prototype = {}; // Or just mutating prototypes
   ```
 
   ```javascript
@@ -75,11 +74,12 @@ npm i isolation --save
   ```
 
   ```javascript
-  // unchecked-dangerous-library index.js
-  var console = msg => process.stdout.write(msg); // Someone just want different implementation for console
-  global.console = console;
-  console('Here it works fine');
-  String.prototype = {}; // Or just mutating prototypes
+  // index.js
+  const Isolation = require('isolation');
+  Isolation.read('./routes');
+  console.log('All works fine');
+  console('Here it not works'); // Will throw an error
+  String.prototype; // Will be as default
   ```
 
 <h2 id="module-types" align="center">
@@ -111,6 +111,7 @@ your realms global variables such as:
 const Isolation = require('isolation');
 console.log(new Isolation(`module.exports = { field: 'value' };`).execute()); // Output: { field: 'value' }
 console.log(Isolation.execute(`module.exports = (a, b) => a + b;`)(2 + 2)); // Output: 4
+console.log(Isolation.execute(`(a, b) => a + b;`)(2 + 2)); // Output: undefined
 Isolation.execute(`module.exports = async (a, b) => a + b;`)(2 + 2).then(console.log); // Output: 4
 ```
 
@@ -135,7 +136,7 @@ Isolation.execute(`async (a, b) => a + b;`, options)(2 + 2).then(console.log); /
 
 ### **ESM**
 
-Isolation does'nt support esm syntax yet. That's because currently <code>node.vm</code> ESM modules
+Isolation doesn't yet support esm syntax. That's because currently <code>node.vm</code> ESM modules
 are experimental.
 
 <h2 id="context-api" align="center">
@@ -191,7 +192,7 @@ Reader allow you to run scripts from files and extends possible provided options
 
 - Option <code>prepare:boolean</code> reader will return non-executed scripts, **default false**
 - Option <code>depth:number|boolean</code> nested directories restrictions, **default true**
-- Option <code>flat:boolean</code> reader will flat nested scripts, **default false**
+- Option <code>flat:boolean</code> result with nested scripts will be flat, **default false**
 
 - <code>read</code> Allow you to read source codes from files and directories
 
@@ -236,8 +237,10 @@ Reader allow you to run scripts from files and extends possible provided options
 
 You may control access over realm submodules and reader api;
 
-> [!NOTE] If access doesn't provided realm submodules would'nt be accessible and reader will read
-> all files in directed repository.
+> [!NOTE]
+>
+> If access doesn't provided realm submodules would'nt be accessible and reader will read all files
+> in directed repository.
 
 ```js
 const options = { access: pathOrModule => pathOrModule === 'fs' || pathOrModule.endsWith('.js') };
