@@ -1,3 +1,5 @@
+import type { Context, CreateContextOptions } from 'node:vm';
+
 /**
  * @example <caption>Context usage example</caption>
  * const realm = new Isolation('a - b', { type: 'iso' });

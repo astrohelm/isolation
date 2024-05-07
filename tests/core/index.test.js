@@ -6,6 +6,26 @@ const Script = require('../..');
 const { contextify, read } = Script;
 const target = name => path.join(__dirname, name);
 
+test('[CORE] Node context', () => {
+  const ctx = Script.contextify.COMMON;
+  const v = process.version.slice(1, 3);
+  const v18 = 'Blob' in ctx;
+  const v19 = 'PerformanceEntry' in ctx;
+  const v20 = 'File' in ctx;
+  const v21 = 'Navigator' in ctx;
+  const versions = { 18: v18, 19: v19, 20: v20, 21: v21 };
+
+  if (v in versions) {
+    var testA = versions[v];
+    var testB = versions[v + 1];
+    assert(testA && !testB);
+    return;
+  }
+
+  if (v > Object.keys(versions).at(-1)) assert(testB);
+  else assert.fail('Unsupported node version');
+});
+
 test('[CORE] Script executor', async () => {
   const script = new Script(`module.exports = ({field: 'value'});`);
   assert.strictEqual(script.name, 'ISO');
@@ -179,7 +199,7 @@ test('[CTX] Custom', async () => {
   assert.strictEqual(ctx.global, context);
 });
 
-test('[REALM] Reader', async () => {
+test('[REALM] Access denied', async () => {
   try {
     const result = Script.execute(`const fs = require('fs');`);
     assert.strictEqual(result, undefined);
@@ -205,3 +225,10 @@ test('[REALM] Non-existent', async () => {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
 });
+
+// test('', () => {
+//   const src = `require('./examples/simple');`;
+//   const ctx = { require };
+//   const result = Script.execute(src, { type: 'iso', ctx });
+//   console.log(result);
+// });
