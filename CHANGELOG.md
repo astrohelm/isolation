@@ -2,7 +2,7 @@
 
 ## [Unreleased][unreleased]
 
-## [2.2.0][] - 2024-05-00
+## [2.2.0][] - 2024-05-07
 
 - Nix-Shell environment for minimal supported node version
 - Latest globals support (Depends on node version)
