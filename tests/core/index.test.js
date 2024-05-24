@@ -226,9 +226,14 @@ test('[REALM] Non-existent', async () => {
   }
 });
 
-// test('', () => {
-//   const src = `require('./examples/simple');`;
-//   const ctx = { require };
-//   const result = Script.execute(src, { type: 'iso', ctx });
-//   console.log(result);
-// });
+test('[REALM] Cache', () => {
+  const path = target('./examples/deep/arrow.cjs');
+  const src = `module.exports = require('./examples/deep/arrow.cjs');`;
+  const access = () => true;
+  const instance = Script.createRequire(__dirname, { access });
+  let a = Script.execute(src, { access, dir: __dirname });
+  let b = Script.execute(src, { access, dir: __dirname });
+  let c = Script.execute(src, { access, dir: __dirname });
+  assert(instance.cache[path] !== undefined);
+  assert(a === b);
+});
