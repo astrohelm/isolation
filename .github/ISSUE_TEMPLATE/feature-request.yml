@@ -1,6 +1,8 @@
 name: 💡 Feature request
 description: Suggest an idea for this project
-labels: [functionality]
+labels: ['feature request']
+assignees:
+  - sashapop10
 body:
   - type: textarea
     attributes:
@@ -15,7 +17,8 @@ body:
   - type: textarea
     attributes:
       label: Alternatives
-      description: A clear and concise description of any alternative solutions or features you've considered.
+      description:
+        A clear and concise description of any alternative solutions or features you've considered.
   - type: textarea
     attributes:
       label: Additional context

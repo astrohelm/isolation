@@ -6,11 +6,18 @@ Check following steps to help us land your changes:
 - Change [ ] to [x] for completed items.
 -->
 
-## Changes - 202x-xx-xx
+## What's Changed on 202x-xx-xx
 
 - Added ...
 - Updated ...
 - Deleted ...
+
+<!-- **Full Changelog:** (vX.X.X...vX.X.X)[CHANGES] -->
+
+**Full Changelog:** [latest][CHANGELOG]
+
+[CHANGES]: https://github.com/astrohelm/node-workspace/compare/vX.X.X...vX.X.X
+[CHANGELOG]: https://github.com/astrohelm/node-workspace/blob/main/CHANGELOG.md
 
 - [ ] tests and linter show no problems (`npm t`)
 - [ ] tests are added/updated for bug fixes and new features
