@@ -225,6 +225,7 @@ test('[REALM] Non-existent', async () => {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
 });
+<<<<<<< HEAD
 
 test('[REALM] Cache', () => {
   const path = target('./examples/deep/arrow.cjs');
@@ -237,3 +238,5 @@ test('[REALM] Cache', () => {
   assert(instance.cache[path] !== undefined);
   assert(a === b);
 });
+=======
+>>>>>>> main
