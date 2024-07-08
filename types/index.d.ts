@@ -54,9 +54,19 @@ export = class Script {
    * @warning You should know what are you doing
    * const Isolation = require('isolation');
    * const script = new Isolation('a + b', { type: 'iso' });
-   * const ctx = script[Isolation.symbols.kContext]; // Access to script context & etc.
+   * const ctx = script[Isolation.symbols.kCtx]; // Access to script context & etc.
    */
-  static symbols: { kContext: symbol; kRequire: symbol; kOptions: symbol; kMachine: symbol };
+  static symbols: {
+    kCache: symbol;
+    kCtx: symbol;
+    kRealm: symbol;
+    kDir: symbol;
+    kName: symbol;
+    kType: symbol;
+    kRunOpts: symbol;
+    kAccess: symbol;
+    kNpm: symbol;
+  };
 
   /**
    * @example <caption>Skip init process</caption>
@@ -64,12 +74,6 @@ export = class Script {
    * Isolation.execute(`async (a, b) => a + b;`, { type: 'iso' })(2 + 2).then(console.log); // Output: 4
    */
   static execute: (src: string, options?: TOptions, ctx?: Context) => unknown;
-
-  /**
-   * @example <caption>Function that creates require function for the realm</caption>
-   * const myModule = Isolation.createRequire('/parent/directory')('./myModule.js');
-   */
-  static createRequire: (dir: string, options?: TOptions) => NodeRequire;
 
   /**
    * @example <caption>Custom contexts</caption>
@@ -90,5 +94,5 @@ export = class Script {
   /**
    * @description Run prepared scripts
    */
-  execute: (ctx?: Context) => unknown;
+  execute: (ctx?: Context, keepCache?: boolean) => unknown;
 };

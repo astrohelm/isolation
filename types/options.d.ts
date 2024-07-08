@@ -59,8 +59,8 @@ export interface TOptions {
    */
   ctx?: Context | { [key: string]: unknown };
 
-  run?: RunningCodeOptions;
-  script?: ScriptOptions;
+  runOpts?: RunningCodeOptions;
+  realmOpts?: ScriptOptions;
 }
 
 /**

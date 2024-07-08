@@ -29,12 +29,14 @@ test('[CORE] Complex.js', async () => {
   const ctx = contextify({ setTimeout });
   const options = { filename: 'CUSTOM FILE NAME', ctx };
   const ms = await read.file(target('complex.js'), options);
-
-  await ms.add(2, 3, (err, sum) => {
-    assert.strictEqual(err.constructor.name === 'Error', true);
-    assert.strictEqual(sum, 5);
-    assert.strictEqual(err.stack.includes('complex.js'), true);
-    assert.strictEqual(err.message, 'Custom error');
+  await new Promise(resolve => {
+    ms.add(2, 3, (err, sum) => {
+      assert.strictEqual(err.constructor.name === 'Error', true);
+      assert.strictEqual(sum, 5);
+      assert.strictEqual(err.stack.includes('complex.js'), true);
+      assert.strictEqual(err.message, 'Custom error');
+      resolve();
+    });
   });
 });
 

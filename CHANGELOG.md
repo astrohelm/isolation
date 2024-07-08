@@ -2,6 +2,21 @@
 
 ## [Unreleased][unreleased]
 
+## [3.0.0][] - 2024-07-08
+
+### Major update
+
+- Realm caching support, now `CJS` realms depended on require are faster.
+- `CJS` type realms are receiving more native require construction now.
+- Options changes: `script` -> `realmOpts`, `run` -> `runOpts`.
+- New parameter `keepCache` for execute method.
+- Require function now part of the Script.
+- Method `createRequire` become private.
+- More errors & information about them.
+- Nix shell removed.
+- Packages update.
+- Symbols rework.
+
 ## [2.2.0][] - 2024-05-07
 
 - Nix-Shell environment for minimal supported node version
@@ -150,7 +165,8 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/astrohelm/isolation/compare/v2.2.0...v3.0.0
 [2.2.0]: https://github.com/astrohelm/isolation/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/astrohelm/isolation/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/astrohelm/isolation/compare/v2.0.0...v2.1.0

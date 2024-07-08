@@ -294,8 +294,8 @@ console.log(result); // Output: Isolation.js Works !
 | **prepare**      | boolean                                        | false                            | Reader&nbsp;would'nt&nbsp;execute script for you                                                      |
 | **flat**         | boolean                                        | false                            | Reader&nbsp;will&nbsp;flat&nbsp;nested&nbsp;scripts                                                   |
 | **depth**        | boolean&nbsp;\|&nbsp;number                    | true                             | Restricts&nbsp;dir&nbsp;reading&nbsp;depth                                                            |
-| **script**       | [ScriptOptions](./types/options.d.ts#L63)      | -                                | Configuration&nbsp;for VM.Script initialization                                                       |
-| **run**          | [RunningCodeOptions](./types/options.d.ts#L62) | {&nbsp;timeout:&nbsp;1000&nbsp;} | Configuration&nbsp;for VM.Script execution                                                            |
+| **realmOpts**    | [ScriptOptions](./types/options.d.ts#L63)      | -                                | Configuration&nbsp;for VM.Script initialization                                                       |
+| **runOpts**      | [RunningCodeOptions](./types/options.d.ts#L62) | {&nbsp;timeout:&nbsp;1000&nbsp;} | Configuration&nbsp;for VM.Script execution                                                            |
 
 <h2 align="center">Copyright & contributors</h2>
 
