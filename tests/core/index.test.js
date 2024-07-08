@@ -22,7 +22,8 @@ test('[CORE] Node context', () => {
     return;
   }
 
-  if (v > Object.keys(versions).at(-1)) assert(testB);
+  const latestCheck = Object.keys(versions).at(-1);
+  if (v > latestCheck) assert(versions[latestCheck]);
   else assert.fail('Unsupported node version');
 });
 
