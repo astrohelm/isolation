@@ -46,14 +46,19 @@ test('[CORE] Script executor extended', async () => {
   assert.strictEqual(script.execute({ a: 2, b: 3 }), 5);
 });
 
-test('[CORE] Npm isolation check', async () => {
+test('[CORE] Npm isolation check & Cache', async () => {
   const access = () => true;
   const script = Script.prepare(`module.exports = require('chalk')`, {
     access,
     npmIsolation: true,
     ctx: contextify.NODE,
   });
-  assert.strictEqual(typeof script.execute(), 'function');
+
+  const result = script.execute();
+  const resolved = require.resolve('chalk');
+  assert.strictEqual(typeof result, 'function');
+  assert(script[Script.symbols.kCache].size > 0);
+  assert.strictEqual(typeof script[Script.symbols.kCache].get(resolved), 'function');
 });
 
 test('[READER] Script loader', async () => {
@@ -226,5 +231,3 @@ test('[REALM] Non-existent', async () => {
     assert.strictEqual(err.message, `Access denied 'nothing'`);
   }
 });
-
-test('[REALM] Cache', () => {});
