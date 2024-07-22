@@ -16,8 +16,8 @@ Check following steps to help us land your changes:
 
 **Full Changelog:** [latest][CHANGELOG]
 
-[CHANGES]: https://github.com/astrohelm/node-workspace/compare/vX.X.X...vX.X.X
-[CHANGELOG]: https://github.com/astrohelm/node-workspace/blob/main/CHANGELOG.md
+[CHANGES]: https://github.com/astrohelm/isolation/compare/vX.X.X...vX.X.X
+[CHANGELOG]: https://github.com/astrohelm/isolation/blob/main/CHANGELOG.md
 
 - [ ] tests and linter show no problems (`npm t`)
 - [ ] tests are added/updated for bug fixes and new features
