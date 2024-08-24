@@ -12,7 +12,7 @@ Check following steps to help us land your changes:
 - Updated ...
 - Deleted ...
 
-<!-- **Full Changelog:** (vX.X.X...vX.X.X)[CHANGES] -->
+<!-- **Full Changelog:** [vX.X.X...vX.X.X][CHANGES] -->
 
 **Full Changelog:** [latest][CHANGELOG]
 

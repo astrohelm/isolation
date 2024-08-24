@@ -2,6 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+## [3.1.0][] - 2024-08-24
+
+- Removed unnecessary logic
+- Fixed bug with cjs require function
+- Removed useless makefile
+- Performance optimization
+- Decomposition
+
 ## [3.0.0][] - 2024-07-08
 
 ### Major update
@@ -165,7 +173,8 @@
 - Quality of life improvements
 - Massive README update, documentation improvement
 
-[unreleased]: https://github.com/astrohelm/isolation/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/astrohelm/isolation/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/astrohelm/isolation/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/astrohelm/isolation/compare/v2.2.0...v3.0.0
 [2.2.0]: https://github.com/astrohelm/isolation/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/astrohelm/isolation/compare/v2.1.0...v2.1.1

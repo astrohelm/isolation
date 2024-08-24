@@ -57,15 +57,18 @@ export = class Script {
    * const ctx = script[Isolation.symbols.kCtx]; // Access to script context & etc.
    */
   static symbols: {
-    kCache: symbol;
-    kCtx: symbol;
-    kRealm: symbol;
-    kDir: symbol;
-    kName: symbol;
-    kType: symbol;
+    kCreateRequire: symbol;
+    kCreateVM: symbol;
+    kRealmOpts: symbol;
     kRunOpts: symbol;
-    kAccess: symbol;
     kNpm: symbol;
+    kAccess: symbol;
+    kName: symbol;
+    kDir: symbol;
+    kCache: symbol;
+    kRealm: symbol;
+    kType: symbol;
+    kCtx: symbol;
   };
 
   /**
